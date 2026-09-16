@@ -3,7 +3,7 @@
   const theme = typeof navTheme !== 'undefined' ? navTheme : 'white';
   const textClass = theme === 'white' ? 'text-white' : 'text-black';
   const borderClass = theme === 'white' ? 'border-white/25' : 'border-black/10';
-  const barClass = theme === 'white' ? 'bg-white' : 'bg-current';
+  const barClass = 'bg-current';
 %>
 <nav id="mainNav" class="fixed top-0 left-0 w-full z-[50] <%= textClass %> transition-colors duration-300">
   <div class="px-4 sm:px-6 lg:px-10 py-5 sm:py-6 flex items-center justify-between border-b <%= borderClass %>">
