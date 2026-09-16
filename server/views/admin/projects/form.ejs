@@ -13,7 +13,7 @@
       <% if (project && project.image) { %><img class="current-img" src="<%= project.image %>"><% } %>
       <input type="file" name="imageFile" accept="image/*">
       <p class="hint">Or paste an image URL instead:</p>
-      <input type="url" name="image" value="<%= project ? project.image : '' %>" placeholder="https://...">
+      <input type="text" name="image" value="<%= project ? project.image : '' %>" placeholder="https://...">
     </div>
     <div class="field-group"><label>Display Order</label><input type="number" name="order" value="<%= project ? project.order : 0 %>"></div>
     <div class="field-group">

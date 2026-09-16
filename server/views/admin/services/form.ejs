@@ -16,7 +16,7 @@
       <% if (service && service.image) { %><img class="current-img" src="<%= service.image %>"><% } %>
       <input type="file" name="imageFile" accept="image/*">
       <p class="hint">Or paste an image URL instead:</p>
-      <input type="url" name="image" value="<%= service ? service.image : '' %>" placeholder="https://...">
+      <input type="text" name="image" value="<%= service ? service.image : '' %>" placeholder="https://...">
     </div>
 
     <div class="field-group"><label>Short Description (shown on cards/hero)</label><textarea name="shortDescription" rows="2"><%= service ? service.shortDescription : '' %></textarea></div>
