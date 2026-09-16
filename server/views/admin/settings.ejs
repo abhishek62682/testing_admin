@@ -30,8 +30,6 @@
       <label>Hero Background Image</label>
       <% if (settings.heroImage) { %><img class="current-img" src="<%= settings.heroImage %>"><% } %>
       <input type="file" name="heroImageFile" accept="image/*">
-      <p class="hint">Or paste an image URL instead:</p>
-      <input type="text" name="heroImage" value="<%= settings.heroImage %>" placeholder="https://...">
     </div>
     <div class="field-group"><label>Hero Title</label><textarea name="heroTitle" rows="2" required><%= settings.heroTitle %></textarea></div>
     <div class="field-group"><label>Hero Description</label><textarea name="heroDescription" rows="2" required><%= settings.heroDescription %></textarea></div>

@@ -8,8 +8,6 @@
       <label>Image</label>
       <% if (item && item.image) { %><img class="current-img" src="<%= item.image %>"><% } %>
       <input type="file" name="imageFile" accept="image/*">
-      <p class="hint">Or paste an image URL instead:</p>
-      <input type="text" name="image" value="<%= item ? item.image : '' %>" placeholder="https://...">
     </div>
     <div class="field-group"><label>Caption (optional)</label><input type="text" name="caption" value="<%= item ? item.caption : '' %>"></div>
     <div class="field-group"><label>Display Order</label><input type="number" name="order" value="<%= item ? item.order : 0 %>"></div>

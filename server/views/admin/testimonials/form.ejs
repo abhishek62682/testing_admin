@@ -12,8 +12,6 @@
       <label>Photo</label>
       <% if (testimonial && testimonial.image) { %><img class="current-img" src="<%= testimonial.image %>"><% } %>
       <input type="file" name="imageFile" accept="image/*">
-      <p class="hint">Or paste an image URL instead:</p>
-      <input type="text" name="image" value="<%= testimonial ? testimonial.image : '' %>" placeholder="https://...">
     </div>
     <div class="field-group"><label>Quote</label><textarea name="quote" rows="4" required><%= testimonial ? testimonial.quote : '' %></textarea></div>
     <div class="field-group"><label>Display Order</label><input type="number" name="order" value="<%= testimonial ? testimonial.order : 0 %>"></div>

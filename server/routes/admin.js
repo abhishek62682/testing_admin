@@ -168,7 +168,6 @@ router.post("/settings", upload.single("heroImageFile"), async (req, res) => {
     seoDescription: b.seoDescription,
   });
   if (req.file) settings.heroImage = "/uploads/" + req.file.filename;
-  else if (b.heroImage) settings.heroImage = b.heroImage;
   await settings.save();
   req.flash("success", "Settings updated");
   res.redirect("/admin/settings");
@@ -209,7 +208,7 @@ router.post("/services", upload.single("imageFile"), async (req, res) => {
     .filter((f) => f.question && f.answer);
 
   const slug = slugify(b.slug || b.title, { lower: true, strict: true });
-  const image = req.file ? "/uploads/" + req.file.filename : b.image || "";
+  const image = req.file ? "/uploads/" + req.file.filename : "";
 
   await Service.create({
     title: b.title,
@@ -258,7 +257,6 @@ router.post("/services/:id", upload.single("imageFile"), async (req, res) => {
   service.order = Number(b.order) || 0;
   service.published = b.published === "on";
   if (req.file) service.image = "/uploads/" + req.file.filename;
-  else if (b.image) service.image = b.image;
 
   await service.save();
   req.flash("success", "Service updated");
@@ -285,7 +283,7 @@ router.get("/testimonials/new", (req, res) => {
 
 router.post("/testimonials", upload.single("imageFile"), async (req, res) => {
   const b = req.body;
-  const image = req.file ? "/uploads/" + req.file.filename : b.image || "";
+  const image = req.file ? "/uploads/" + req.file.filename : "";
   await Testimonial.create({
     name: b.name,
     role: b.role,
@@ -314,7 +312,6 @@ router.post("/testimonials/:id", upload.single("imageFile"), async (req, res) =>
   testimonial.order = Number(b.order) || 0;
   testimonial.published = b.published === "on";
   if (req.file) testimonial.image = "/uploads/" + req.file.filename;
-  else if (b.image) testimonial.image = b.image;
   await testimonial.save();
   req.flash("success", "Testimonial updated");
   res.redirect("/admin/testimonials");
@@ -340,7 +337,7 @@ router.get("/team/new", (req, res) => {
 
 router.post("/team", upload.single("imageFile"), async (req, res) => {
   const b = req.body;
-  const image = req.file ? "/uploads/" + req.file.filename : b.image || "";
+  const image = req.file ? "/uploads/" + req.file.filename : "";
   await TeamMember.create({
     name: b.name,
     role: b.role,
@@ -367,7 +364,6 @@ router.post("/team/:id", upload.single("imageFile"), async (req, res) => {
   member.order = Number(b.order) || 0;
   member.published = b.published === "on";
   if (req.file) member.image = "/uploads/" + req.file.filename;
-  else if (b.image) member.image = b.image;
   await member.save();
   req.flash("success", "Team member updated");
   res.redirect("/admin/team");
@@ -393,7 +389,7 @@ router.get("/projects/new", (req, res) => {
 
 router.post("/projects", upload.single("imageFile"), async (req, res) => {
   const b = req.body;
-  const image = req.file ? "/uploads/" + req.file.filename : b.image || "";
+  const image = req.file ? "/uploads/" + req.file.filename : "";
   await Project.create({
     title: b.title,
     category: b.category,
@@ -420,7 +416,6 @@ router.post("/projects/:id", upload.single("imageFile"), async (req, res) => {
   project.order = Number(b.order) || 0;
   project.published = b.published === "on";
   if (req.file) project.image = "/uploads/" + req.file.filename;
-  else if (b.image) project.image = b.image;
   await project.save();
   req.flash("success", "Project updated");
   res.redirect("/admin/projects");
@@ -446,11 +441,11 @@ router.get("/gallery/new", (req, res) => {
 
 router.post("/gallery", upload.single("imageFile"), async (req, res) => {
   const b = req.body;
-  const image = req.file ? "/uploads/" + req.file.filename : b.image || "";
-  if (!image) {
-    req.flash("error", "Please provide an image");
+  if (!req.file) {
+    req.flash("error", "Please upload an image");
     return res.redirect("/admin/gallery/new");
   }
+  const image = "/uploads/" + req.file.filename;
   await GalleryItem.create({
     image,
     caption: b.caption,
@@ -475,7 +470,6 @@ router.post("/gallery/:id", upload.single("imageFile"), async (req, res) => {
   item.order = Number(b.order) || 0;
   item.published = b.published === "on";
   if (req.file) item.image = "/uploads/" + req.file.filename;
-  else if (b.image) item.image = b.image;
   await item.save();
   req.flash("success", "Gallery image updated");
   res.redirect("/admin/gallery");
