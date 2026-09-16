@@ -1,0 +1,28 @@
+<%
+  // navTheme: 'white' (dark bg, white text) or 'black' (light bg, dark text)
+  const theme = typeof navTheme !== 'undefined' ? navTheme : 'white';
+  const textClass = theme === 'white' ? 'text-white' : 'text-black';
+  const borderClass = theme === 'white' ? 'border-white/25' : 'border-black/10';
+  const barClass = theme === 'white' ? 'bg-white' : 'bg-current';
+%>
+<nav id="mainNav" class="fixed top-0 left-0 w-full z-[50] <%= textClass %> transition-colors duration-300">
+  <div class="px-4 sm:px-6 lg:px-10 py-5 sm:py-6 flex items-center justify-between border-b <%= borderClass %>">
+    <a href="/#home" class="font-secondary text-[18px] leading-[24px] font-medium tracking-wide"><%= settings.businessName %></a>
+
+    <ul class="hidden md:flex items-center gap-8 lg:gap-12 font-secondary text-[14px] leading-[18px] font-medium">
+      <li><a href="/portfolio" class="menu-link hover:opacity-60 transition-opacity">Portfolio</a></li>
+      <li><a href="/gallery" class="menu-link hover:opacity-60 transition-opacity">Gallery</a></li>
+      <li><a href="/services" class="menu-link hover:opacity-60 transition-opacity">Services</a></li>
+      <li><a href="/about" class="menu-link hover:opacity-60 transition-opacity">About Us</a></li>
+      <li><a href="/cost-calculator" class="menu-link hover:opacity-60 transition-opacity">Cost Calculator</a></li>
+      <li><a href="/contact" class="menu-link hover:opacity-60 transition-opacity">Enquiries</a></li>
+    </ul>
+
+    <!-- Mobile hamburger -->
+    <div id="openMenuBtn" class="md:hidden cursor-pointer flex flex-col gap-[6px] items-end shrink-0">
+      <span class="block w-7 h-[1.5px] <%= barClass %>"></span>
+      <span class="block w-7 h-[1.5px] <%= barClass %>"></span>
+      <span class="block w-7 h-[1.5px] <%= barClass %>"></span>
+    </div>
+  </div>
+</nav>

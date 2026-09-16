@@ -1,0 +1,32 @@
+<%- include('../partials/_head') %>
+
+<div class="top-bar">
+  <h1 style="margin:0;">Team Members</h1>
+  <a class="btn btn-primary" href="/admin/team/new">+ Add Team Member</a>
+</div>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Photo</th><th>Name</th><th>Role</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% team.forEach(function(m) { %>
+        <tr>
+          <td><img class="thumb" src="<%= m.image %>" onerror="this.style.visibility='hidden'"></td>
+          <td><%= m.name %></td>
+          <td><%= m.role %></td>
+          <td><%= m.order %></td>
+          <td><span class="badge <%= m.published ? 'on' : '' %>"><%= m.published ? 'Published' : 'Draft' %></span></td>
+          <td class="actions">
+            <a class="btn btn-secondary btn-sm" href="/admin/team/<%= m._id %>/edit">Edit</a>
+            <form class="inline" method="POST" action="/admin/team/<%= m._id %>/delete" onsubmit="return confirm('Remove this team member?');">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (!team.length) { %><tr><td colspan="6">No team members yet.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/_foot') %>

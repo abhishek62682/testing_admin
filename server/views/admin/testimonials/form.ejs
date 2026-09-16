@@ -1,0 +1,28 @@
+<%- include('../partials/_head') %>
+
+<h1><%= testimonial ? 'Edit Testimonial' : 'New Testimonial' %></h1>
+
+<form method="POST" action="<%= testimonial ? '/admin/testimonials/' + testimonial._id : '/admin/testimonials' %>" enctype="multipart/form-data">
+  <div class="card">
+    <div class="grid-2">
+      <div class="field-group"><label>Client Name</label><input type="text" name="name" value="<%= testimonial ? testimonial.name : '' %>" required></div>
+      <div class="field-group"><label>Role / Company</label><input type="text" name="role" value="<%= testimonial ? testimonial.role : '' %>"></div>
+    </div>
+    <div class="field-group">
+      <label>Photo</label>
+      <% if (testimonial && testimonial.image) { %><img class="current-img" src="<%= testimonial.image %>"><% } %>
+      <input type="file" name="imageFile" accept="image/*">
+      <p class="hint">Or paste an image URL instead:</p>
+      <input type="url" name="image" value="<%= testimonial ? testimonial.image : '' %>" placeholder="https://...">
+    </div>
+    <div class="field-group"><label>Quote</label><textarea name="quote" rows="4" required><%= testimonial ? testimonial.quote : '' %></textarea></div>
+    <div class="field-group"><label>Display Order</label><input type="number" name="order" value="<%= testimonial ? testimonial.order : 0 %>"></div>
+    <div class="field-group">
+      <label><input type="checkbox" name="published" <%= (!testimonial || testimonial.published) ? 'checked' : '' %> style="width:auto; display:inline; margin-right:6px;"> Published</label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary"><%= testimonial ? 'Save Changes' : 'Create Testimonial' %></button>
+  <a class="btn btn-secondary" href="/admin/testimonials">Cancel</a>
+</form>
+
+<%- include('../partials/_foot') %>

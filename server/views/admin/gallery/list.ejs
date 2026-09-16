@@ -1,0 +1,31 @@
+<%- include('../partials/_head') %>
+
+<div class="top-bar">
+  <h1 style="margin:0;">Gallery</h1>
+  <a class="btn btn-primary" href="/admin/gallery/new">+ Add Image</a>
+</div>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Image</th><th>Caption</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% items.forEach(function(i) { %>
+        <tr>
+          <td><img class="thumb" src="<%= i.image %>" onerror="this.style.visibility='hidden'"></td>
+          <td><%= i.caption %></td>
+          <td><%= i.order %></td>
+          <td><span class="badge <%= i.published ? 'on' : '' %>"><%= i.published ? 'Published' : 'Draft' %></span></td>
+          <td class="actions">
+            <a class="btn btn-secondary btn-sm" href="/admin/gallery/<%= i._id %>/edit">Edit</a>
+            <form class="inline" method="POST" action="/admin/gallery/<%= i._id %>/delete" onsubmit="return confirm('Delete this image?');">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (!items.length) { %><tr><td colspan="5">No gallery images yet.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/_foot') %>

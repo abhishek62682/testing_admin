@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('../partials/head') %>
+    <style>
+      html, body { height: 100%; margin: 0; overflow: hidden; background: #efe9df; }
+      #stage { position: fixed; inset: 0; overflow: hidden; cursor: grab; touch-action: none; background: #efe9df; }
+      #stage.dragging { cursor: grabbing; }
+      #canvas { position: absolute; top: 0; left: 0; will-change: transform; }
+      .g-cell { position: absolute; }
+      .g-item { position: absolute; overflow: hidden; border-radius: 10px; background: #e4dccd; }
+      .g-item img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; -webkit-user-drag: none; user-select: none; }
+      .top-scrim { position: fixed; inset: 0 0 auto 0; height: 130px; z-index: 40; pointer-events: none;
+        background: linear-gradient(180deg, rgba(20,18,16,0.45), rgba(20,18,16,0)); }
+      .hint { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); z-index: 40; pointer-events: none;
+        color: #fff; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; opacity: .85;
+        text-shadow: 0 1px 8px rgba(0,0,0,.5); display: inline-flex; align-items: center; gap: 8px; }
+    </style>
+  </head>
+
+  <body>
+
+    <%- include('../partials/menu') %>
+
+    <div class="top-scrim"></div>
+
+    <nav class="fixed top-0 left-0 w-full z-[50] text-white">
+      <div class="px-4 sm:px-6 lg:px-10 py-5 sm:py-6 flex items-center justify-between border-b border-white/25">
+        <a href="/#home" class="font-secondary text-[18px] leading-[24px] font-medium tracking-wide"><%= settings.businessName %></a>
+        <ul class="hidden md:flex items-center gap-8 lg:gap-12 font-secondary text-[14px] leading-[18px] font-medium">
+          <li><a href="/portfolio" class="menu-link hover:opacity-60 transition-opacity">Portfolio</a></li>
+          <li><a href="/gallery" class="menu-link hover:opacity-60 transition-opacity">Gallery</a></li>
+          <li><a href="/services" class="menu-link hover:opacity-60 transition-opacity">Services</a></li>
+          <li><a href="/about" class="menu-link hover:opacity-60 transition-opacity">About Us</a></li>
+          <li><a href="/cost-calculator" class="menu-link hover:opacity-60 transition-opacity">Cost Calculator</a></li>
+          <li><a href="/contact" class="menu-link hover:opacity-60 transition-opacity">Enquiries</a></li>
+        </ul>
+        <div id="openMenuBtn" class="md:hidden cursor-pointer flex flex-col gap-[6px] items-end shrink-0">
+          <span class="block w-7 h-[1.5px] bg-white"></span><span class="block w-7 h-[1.5px] bg-white"></span><span class="block w-7 h-[1.5px] bg-white"></span>
+        </div>
+      </div>
+    </nav>
+
+    <div id="stage">
+      <div id="canvas"></div>
+    </div>
+
+    <div class="hint"><i class="ri-drag-move-2-line"></i> Drag to explore</div>
+
+    <script>
+      const sideMenu = document.getElementById("sideMenu");
+      const menuOverlay = document.getElementById("menuOverlay");
+      document.getElementById("openMenuBtn").addEventListener("click", () => { sideMenu.classList.remove("-translate-x-full"); menuOverlay.classList.remove("hidden"); });
+      const closeMenu = () => { sideMenu.classList.add("-translate-x-full"); menuOverlay.classList.add("hidden"); };
+      document.getElementById("closeMenuBtn").addEventListener("click", closeMenu);
+      menuOverlay.addEventListener("click", closeMenu);
+      document.querySelectorAll(".menu-link").forEach((l) => l.addEventListener("click", closeMenu));
+    </script>
+
+    <script>
+      const IMAGES = <%- JSON.stringify(galleryImages) %>;
+
+      const GAP = 10;
+      const COL = 300;
+      const ROW = 150;
+      const LAYOUT = [
+        { c: 0, r: 0, w: 1, h: 3 },
+        { c: 0, r: 3, w: 1, h: 3 },
+        { c: 1, r: 0, w: 1, h: 2 },
+        { c: 1, r: 2, w: 1, h: 2 },
+        { c: 1, r: 4, w: 1, h: 2 },
+        { c: 2, r: 0, w: 1, h: 4 },
+        { c: 2, r: 4, w: 1, h: 2 },
+      ];
+      const CELL_W = 3 * COL + 2 * GAP;
+      const CELL_H = 6 * ROW + 5 * GAP;
+      const STRIDE_X = CELL_W + GAP;
+      const STRIDE_Y = CELL_H + GAP;
+
+      const stage = document.getElementById("stage");
+      const canvas = document.getElementById("canvas");
+
+      let cols = 0, rows = 0;
+      function px(n) { return n + "px"; }
+      let CELLS = [];
+
+      function imgFor(worldC, worldR, slot) {
+        let h = (worldC * 73856093) ^ (worldR * 19349663) ^ (slot * 83492791);
+        h = (h % IMAGES.length + IMAGES.length) % IMAGES.length;
+        return IMAGES[h];
+      }
+
+      function buildCanvas() {
+        const vw = window.innerWidth || document.documentElement.clientWidth || 1440;
+        const vh = window.innerHeight || document.documentElement.clientHeight || 900;
+        const needCols = Math.ceil(vw / STRIDE_X) + 3;
+        const needRows = Math.ceil(vh / STRIDE_Y) + 3;
+        if (needCols === cols && needRows === rows && canvas.childElementCount) return;
+        canvas.innerHTML = "";
+        CELLS = [];
+        cols = needCols;
+        rows = needRows;
+        const frag = document.createDocumentFragment();
+        for (let j = 0; j < rows; j++) {
+          for (let i = 0; i < cols; i++) {
+            const cell = document.createElement("div");
+            cell.className = "g-cell";
+            cell.style.left = px(i * STRIDE_X);
+            cell.style.top = px(j * STRIDE_Y);
+            cell.style.width = px(CELL_W);
+            cell.style.height = px(CELL_H);
+            const imgs = [];
+            for (let s = 0; s < LAYOUT.length; s++) {
+              const spec = LAYOUT[s];
+              const el = document.createElement("div");
+              el.className = "g-item";
+              el.style.left = px(spec.c * (COL + GAP));
+              el.style.top = px(spec.r * (ROW + GAP));
+              el.style.width = px(spec.w * COL + (spec.w - 1) * GAP);
+              el.style.height = px(spec.h * ROW + (spec.h - 1) * GAP);
+              const img = document.createElement("img");
+              img.alt = "Interior";
+              el.appendChild(img);
+              cell.appendChild(el);
+              imgs.push(img);
+            }
+            CELLS.push({ i, j, imgs });
+            frag.appendChild(cell);
+          }
+        }
+        canvas.appendChild(frag);
+        baseX = null; baseY = null;
+        assignImages(true);
+      }
+
+      let baseX = null, baseY = null;
+      function assignImages(force) {
+        const bx = Math.floor(pos.x / STRIDE_X);
+        const by = Math.floor(pos.y / STRIDE_Y);
+        if (!force && bx === baseX && by === baseY) return;
+        baseX = bx; baseY = by;
+        for (const c of CELLS) {
+          const worldC = c.i - bx;
+          const worldR = c.j - by;
+          for (let s = 0; s < c.imgs.length; s++) {
+            const src = imgFor(worldC, worldR, s);
+            if (c.imgs[s].getAttribute("src") !== src) c.imgs[s].src = src;
+          }
+        }
+      }
+
+      let pos = { x: 0, y: 0 };
+      let vel = { x: 0, y: 0 };
+      let dragging = false;
+      let last = { x: 0, y: 0 };
+      let moved = 0;
+
+      buildCanvas();
+
+      function wrap(v, s) { return ((v % s) + s) % s; }
+
+      function render() {
+        if (!dragging) {
+          pos.x += vel.x; pos.y += vel.y;
+          vel.x *= 0.94; vel.y *= 0.94;
+          if (Math.abs(vel.x) < 0.05) vel.x = 0;
+          if (Math.abs(vel.y) < 0.05) vel.y = 0;
+        }
+        assignImages(false);
+        const tx = wrap(pos.x, STRIDE_X) - STRIDE_X;
+        const ty = wrap(pos.y, STRIDE_Y) - STRIDE_Y;
+        canvas.style.transform = "translate3d(" + tx + "px," + ty + "px,0)";
+        requestAnimationFrame(render);
+      }
+      render();
+
+      stage.addEventListener("pointerdown", (e) => {
+        dragging = true; moved = 0;
+        stage.classList.add("dragging");
+        try { stage.setPointerCapture(e.pointerId); } catch (_) {}
+        last.x = e.clientX; last.y = e.clientY;
+        vel.x = 0; vel.y = 0;
+      });
+
+      stage.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - last.x;
+        const dy = e.clientY - last.y;
+        last.x = e.clientX; last.y = e.clientY;
+        pos.x += dx; pos.y += dy;
+        vel.x = vel.x * 0.6 + dx * 0.4;
+        vel.y = vel.y * 0.6 + dy * 0.4;
+        moved += Math.abs(dx) + Math.abs(dy);
+      });
+
+      function endDrag(e) {
+        if (!dragging) return;
+        dragging = false;
+        stage.classList.remove("dragging");
+        try { stage.releasePointerCapture(e.pointerId); } catch (_) {}
+      }
+      stage.addEventListener("pointerup", endDrag);
+      stage.addEventListener("pointercancel", endDrag);
+
+      stage.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        pos.x -= e.deltaX; pos.y -= e.deltaY;
+        vel.x = 0; vel.y = 0;
+      }, { passive: false });
+
+      let rt;
+      window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(buildCanvas, 150); });
+      window.addEventListener("load", buildCanvas);
+      setTimeout(buildCanvas, 300);
+      setTimeout(buildCanvas, 1000);
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,32 @@
+<%- include('../partials/_head') %>
+
+<div class="top-bar">
+  <h1 style="margin:0;">Portfolio Projects</h1>
+  <a class="btn btn-primary" href="/admin/projects/new">+ Add Project</a>
+</div>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Image</th><th>Title</th><th>Category</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% projects.forEach(function(p) { %>
+        <tr>
+          <td><img class="thumb" src="<%= p.image %>" onerror="this.style.visibility='hidden'"></td>
+          <td><%= p.title %></td>
+          <td><%= p.category %></td>
+          <td><%= p.order %></td>
+          <td><span class="badge <%= p.published ? 'on' : '' %>"><%= p.published ? 'Published' : 'Draft' %></span></td>
+          <td class="actions">
+            <a class="btn btn-secondary btn-sm" href="/admin/projects/<%= p._id %>/edit">Edit</a>
+            <form class="inline" method="POST" action="/admin/projects/<%= p._id %>/delete" onsubmit="return confirm('Delete this project?');">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (!projects.length) { %><tr><td colspan="6">No projects yet.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/_foot') %>

@@ -1,0 +1,77 @@
+<%- include('partials/_head') %>
+
+<h1>Website Settings</h1>
+
+<form method="POST" action="/admin/settings" enctype="multipart/form-data">
+
+  <div class="card">
+    <h3 style="margin-top:0;">Business Info</h3>
+    <div class="grid-2">
+      <div class="field-group"><label>Business Name</label><input type="text" name="businessName" value="<%= settings.businessName %>" required></div>
+      <div class="field-group"><label>Email</label><input type="email" name="email" value="<%= settings.email %>" required></div>
+      <div class="field-group"><label>Phone</label><input type="text" name="phone" value="<%= settings.phone %>" required></div>
+      <div class="field-group"><label>WhatsApp Number (digits only, with country code)</label><input type="text" name="whatsapp" value="<%= settings.whatsapp %>" required></div>
+    </div>
+    <div class="field-group"><label>Address</label><textarea name="address" rows="2" required><%= settings.address %></textarea></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">Social Media Links</h3>
+    <div class="grid-2">
+      <div class="field-group"><label>Instagram URL</label><input type="url" name="instagram" value="<%= settings.social.instagram %>"></div>
+      <div class="field-group"><label>Facebook URL</label><input type="url" name="facebook" value="<%= settings.social.facebook %>"></div>
+      <div class="field-group"><label>LinkedIn URL</label><input type="url" name="linkedin" value="<%= settings.social.linkedin %>"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">Homepage Hero</h3>
+    <div class="field-group">
+      <label>Hero Background Image</label>
+      <% if (settings.heroImage) { %><img class="current-img" src="<%= settings.heroImage %>"><% } %>
+      <input type="file" name="heroImageFile" accept="image/*">
+      <p class="hint">Or paste an image URL instead:</p>
+      <input type="url" name="heroImage" value="<%= settings.heroImage %>" placeholder="https://...">
+    </div>
+    <div class="field-group"><label>Hero Title</label><textarea name="heroTitle" rows="2" required><%= settings.heroTitle %></textarea></div>
+    <div class="field-group"><label>Hero Description</label><textarea name="heroDescription" rows="2" required><%= settings.heroDescription %></textarea></div>
+    <div class="grid-2">
+      <div class="field-group"><label>Studio Location (meta row)</label><input type="text" name="heroStudioLocation" value="<%= settings.heroStudioLocation %>"></div>
+      <div class="field-group"><label>Est. Since</label><input type="text" name="heroEstSince" value="<%= settings.heroEstSince %>"></div>
+      <div class="field-group"><label>Speciality</label><input type="text" name="heroSpeciality" value="<%= settings.heroSpeciality %>"></div>
+      <div class="field-group"><label>Rating</label><input type="text" name="heroRating" value="<%= settings.heroRating %>"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">About Section</h3>
+    <div class="field-group"><label>Tagline</label><input type="text" name="aboutTagline" value="<%= settings.aboutTagline %>"></div>
+    <div class="field-group"><label>Content</label><textarea name="aboutContent" rows="5"><%= settings.aboutContent %></textarea></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">CTA Band (used across pages)</h3>
+    <div class="field-group"><label>CTA Title</label><input type="text" name="ctaTitle" value="<%= settings.ctaTitle %>"></div>
+    <div class="field-group"><label>CTA Description</label><textarea name="ctaDescription" rows="2"><%= settings.ctaDescription %></textarea></div>
+    <div class="grid-2">
+      <div class="field-group"><label>Button Text</label><input type="text" name="ctaButtonText" value="<%= settings.ctaButtonText %>"></div>
+      <div class="field-group"><label>Button Link</label><input type="text" name="ctaButtonLink" value="<%= settings.ctaButtonLink %>"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">Footer</h3>
+    <div class="field-group"><label>Footer About Text</label><textarea name="footerAbout" rows="3"><%= settings.footerAbout %></textarea></div>
+    <div class="field-group"><label>Copyright Line</label><input type="text" name="footerCopyright" value="<%= settings.footerCopyright %>"></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0;">SEO</h3>
+    <div class="field-group"><label>Default SEO Title</label><input type="text" name="seoTitle" value="<%= settings.seoTitle %>"></div>
+    <div class="field-group"><label>Default Meta Description</label><textarea name="seoDescription" rows="2"><%= settings.seoDescription %></textarea></div>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Save Settings</button>
+</form>
+
+<%- include('partials/_foot') %>

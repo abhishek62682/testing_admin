@@ -1,0 +1,44 @@
+<%- include('../partials/_head') %>
+
+<h1><%= service ? 'Edit Service' : 'New Service' %></h1>
+
+<form method="POST" action="<%= service ? '/admin/services/' + service._id : '/admin/services' %>" enctype="multipart/form-data">
+  <div class="card">
+    <div class="grid-2">
+      <div class="field-group"><label>Title</label><input type="text" name="title" value="<%= service ? service.title : '' %>" required></div>
+      <div class="field-group"><label>Slug (URL, e.g. residential-interior-design)</label><input type="text" name="slug" value="<%= service ? service.slug : '' %>" placeholder="auto-generated from title if left blank"></div>
+      <div class="field-group"><label>Category</label><input type="text" name="category" value="<%= service ? service.category : '' %>"></div>
+      <div class="field-group"><label>Display Order</label><input type="number" name="order" value="<%= service ? service.order : 0 %>"></div>
+    </div>
+
+    <div class="field-group">
+      <label>Image</label>
+      <% if (service && service.image) { %><img class="current-img" src="<%= service.image %>"><% } %>
+      <input type="file" name="imageFile" accept="image/*">
+      <p class="hint">Or paste an image URL instead:</p>
+      <input type="url" name="image" value="<%= service ? service.image : '' %>" placeholder="https://...">
+    </div>
+
+    <div class="field-group"><label>Short Description (shown on cards/hero)</label><textarea name="shortDescription" rows="2"><%= service ? service.shortDescription : '' %></textarea></div>
+    <div class="field-group"><label>Detailed Content</label><textarea name="content" rows="6"><%= service ? service.content : '' %></textarea></div>
+
+    <div class="field-group">
+      <label>Benefits (one per line)</label>
+      <textarea name="benefits" rows="4"><%= service && service.benefits ? service.benefits.join('\n') : '' %></textarea>
+    </div>
+
+    <div class="field-group">
+      <label>FAQs (one per line, format: Question :: Answer)</label>
+      <textarea name="faqs" rows="4" placeholder="How long does a project take? :: Typically 6-10 weeks depending on scope."><%= service && service.faqs ? service.faqs.map(f => f.question + ' :: ' + f.answer).join('\n') : '' %></textarea>
+    </div>
+
+    <div class="field-group">
+      <label><input type="checkbox" name="published" <%= (!service || service.published) ? 'checked' : '' %> style="width:auto; display:inline; margin-right:6px;"> Published (visible on the website)</label>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary"><%= service ? 'Save Changes' : 'Create Service' %></button>
+  <a class="btn btn-secondary" href="/admin/services">Cancel</a>
+</form>
+
+<%- include('../partials/_foot') %>

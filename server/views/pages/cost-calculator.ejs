@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('../partials/head') %>
+    <style>
+      :root {
+        --ink: #292520;
+        --brown: #6B5D4B;
+        --accent: #8B6F47;
+        --page: #F3EEE6;
+        --card: #FFFFFF;
+        --input: #FAF9F7;
+        --line: #E5DED4;
+        --muted: #8a8078;
+      }
+      .cc-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 18px 44px -34px rgba(41,37,32,0.28); }
+      .step-num { width:46px; height:46px; border-radius:9999px; display:flex; align-items:center; justify-content:center;
+        font-family:"Manrope"; font-weight:700; font-size:14px; background:#fff; border:1px solid var(--line); color:var(--brown);
+        transition: all .3s ease; flex:none; }
+      .step.done .step-num { background:var(--ink); border-color:var(--ink); color:#fff; }
+      .step-num .num { display:block; }
+      .step-num .tick { display:none; font-size:20px; }
+      .step.done .step-num .num { display:none; }
+      .step.done .step-num .tick { display:block; }
+      .rail-line { width:2px; flex:1; background:var(--line); margin:8px auto; transition: background .3s ease; }
+      .step.done .rail-line { background:var(--ink); }
+      @media (max-width: 639px) { .step-num { display: none; } }
+
+      .range { -webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:9999px; background:var(--line); outline:none; cursor:pointer; }
+      .range::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:26px; height:26px; border-radius:50%; background:#fff; border:4px solid var(--accent); box-shadow:0 3px 10px rgba(0,0,0,.18); cursor:pointer; transition: transform .2s ease; }
+      .range::-webkit-slider-thumb:hover { transform: scale(1.08); }
+      .range::-moz-range-thumb { width:26px; height:26px; border-radius:50%; background:#fff; border:4px solid var(--accent); box-shadow:0 3px 10px rgba(0,0,0,.18); cursor:pointer; }
+
+      .seg { border:1px solid var(--line); background:var(--input); color:var(--ink); border-radius:12px;
+        padding:16px 10px; text-align:center; font-family:"Manrope"; font-weight:600; font-size:15px; cursor:pointer;
+        transition: all .25s ease; white-space:nowrap; }
+      .seg:hover { border-color: var(--accent); }
+      .seg.is-selected { background:var(--ink); color:#fff; border-color:var(--ink); }
+
+      .pkg { position:relative; border:1px solid var(--line); background:var(--card); border-radius:14px; padding:20px;
+        cursor:pointer; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+      .pkg:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(41,32,24,0.08); border-color:#d8ccb8; }
+      .pkg.is-selected { border-color: var(--accent); box-shadow: 0 10px 30px rgba(139,111,71,0.16); }
+      .pkg .pkg-icon { width:44px; height:44px; border-radius:10px; background:var(--input); display:flex; align-items:center; justify-content:center; color:var(--ink); font-size:22px; transition: all .25s ease; }
+      .pkg.is-selected .pkg-icon { background:var(--ink); color:#fff; }
+      .pkg .pkg-check { position:absolute; top:16px; right:16px; width:22px; height:22px; border-radius:9999px; border:1.5px solid var(--line); display:flex; align-items:center; justify-content:center; color:#fff; transition: all .2s ease; }
+      .pkg .pkg-check i { font-size:13px; opacity:0; transition: opacity .2s ease; }
+      .pkg.is-selected .pkg-check { background:var(--accent); border-color:var(--accent); }
+      .pkg.is-selected .pkg-check i { opacity:1; }
+      .pkg .pkg-price .plus { display:none; }
+      .pkg.is-selected .pkg-price .from { display:none; }
+      .pkg.is-selected .pkg-price .plus { display:inline; color:var(--accent); font-weight:600; }
+
+      .tier { position:relative; display:flex; flex-direction:column; align-items:stretch;
+        border:1px solid var(--line); background:var(--card); border-radius:22px; padding:14px; cursor:pointer;
+        text-align:left; transition: transform .3s ease, border-color .3s ease; }
+      .tier:hover { transform: translateY(-4px); border-color:#d8ccb8; }
+      .tier.is-selected { border-color: var(--ink); }
+
+      .tier-panel { border-radius:16px; background:var(--input); padding:20px; transition: background .3s ease; }
+      .tier.is-selected .tier-panel { background:linear-gradient(135deg,#efedea,#e3e0da); }
+      .tier-badge { display:inline-flex; align-items:center; gap:7px; background:var(--ink); color:#fff;
+        font-family:"Manrope"; font-size:11px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase;
+        padding:7px 15px; border-radius:9999px; }
+      .tier-badge::before { content:""; width:5px; height:5px; border-radius:50%; background:currentColor; opacity:.55; }
+      .tier-price { font-family:"Hedvig Letters Serif",serif; font-size:40px; line-height:1; color:var(--ink); margin-top:28px; }
+      .tier-price .unit { font-family:"Manrope"; font-size:15px; font-weight:500; color:var(--muted); }
+      .tier-sub { font-family:"Manrope"; font-size:14px; color:var(--brown); margin:16px 6px 0; }
+
+      .feat { margin-top:22px; padding:0 6px 4px; display:flex; flex-direction:column; gap:13px; }
+      .feat li { display:flex; align-items:center; gap:10px; font-family:"Manrope"; font-size:14px; color:var(--brown); }
+      .feat li i { flex:none; color:var(--muted); font-size:16px; line-height:1; }
+      .tier.is-selected .feat li i { color:var(--ink); }
+
+      .field { width:100%; height:50px; border:1px solid var(--line); background:var(--input); border-radius:10px; padding:0 14px;
+        font-family:"Manrope"; font-size:15px; color:var(--ink); outline:none; transition: border-color .2s ease, box-shadow .2s ease; }
+      .field::placeholder { color:#b3aa9e; }
+      .field:focus { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(41,37,32,0.08); }
+
+      .cta-arrow { transition: transform .25s ease; }
+      .summary-cta:hover .cta-arrow { transform: translateX(4px); }
+
+      #mobileBar { transform: translateY(120%); transition: transform .35s cubic-bezier(.16,1,.3,1); }
+      #mobileBar.is-visible { transform: translateY(0); }
+    </style>
+  </head>
+
+  <body class="bg-[#F3EEE6] text-[#292520]">
+    <div class="root relative">
+
+      <%- include('../partials/menu') %>
+      <%- include('../partials/nav', { navTheme: 'white' }) %>
+
+      <!-- HERO -->
+      <section id="calc-hero" class="relative h-[100svh] min-h-[620px] overflow-hidden">
+        <img class="absolute inset-0 w-full h-full object-cover" src="https://framerusercontent.com/images/KnsCNi9u61AcCGrxlpzTM5amLsw.png?width=903&height=665" alt="<%= settings.businessName %> interior">
+        <div class="absolute inset-0 bg-black/55"></div>
+
+        <div class="relative z-10 h-full flex items-center justify-center text-center text-white px-4">
+          <div class="container-x">
+            <div class="max-w-[900px] mx-auto space-y-5 sm:space-y-7">
+              <p class="font-secondary text-[14px] leading-[20px] tracking-[2px] text-white/80">Interior Design &amp; Civil Engineering</p>
+              <h1 class="font-primary font-normal text-[36px] leading-[42px] sm:text-[56px] sm:leading-[62px] lg:text-[72px] lg:leading-[80px]">Flat Interior Cost Calculator</h1>
+
+              <div class="pt-4 flex flex-col sm:flex-row items-start sm:items-center sm:justify-center gap-5 sm:gap-8 w-fit sm:w-auto mx-auto">
+                <div class="flex items-center gap-3">
+                  <span class="w-12 h-12 shrink-0 rounded-full border border-white/40 flex items-center justify-center text-white"><i class="ri-flashlight-line text-[20px]"></i></span>
+                  <div class="text-left"><p class="font-secondary font-semibold text-[14px]">Quick Estimate</p><p class="font-secondary text-[12px] text-white/70">In just a few clicks</p></div>
+                </div>
+                <div class="hidden sm:block w-px h-8 bg-white/25"></div>
+                <div class="flex items-center gap-3">
+                  <span class="w-12 h-12 shrink-0 rounded-full border border-white/40 flex items-center justify-center text-white"><i class="ri-file-list-3-line text-[20px]"></i></span>
+                  <div class="text-left"><p class="font-secondary font-semibold text-[14px]">Transparent Pricing</p><p class="font-secondary text-[12px] text-white/70">No hidden costs</p></div>
+                </div>
+                <div class="hidden sm:block w-px h-8 bg-white/25"></div>
+                <div class="flex items-center gap-3">
+                  <span class="w-12 h-12 shrink-0 rounded-full border border-white/40 flex items-center justify-center text-white"><i class="ri-home-smile-2-line text-[20px]"></i></span>
+                  <div class="text-left"><p class="font-secondary font-semibold text-[14px]">Plan Better</p><p class="font-secondary text-[12px] text-white/70">For your dream home</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="absolute bottom-10 sm:bottom-14 left-0 w-full z-10 px-4">
+          <div class="container-x flex justify-center">
+            <p class="font-secondary text-[14px] leading-[20px] text-white/90 text-center max-w-[520px]">Get an instant estimate for your dream home interior — tentative, transparent, and tailored to your space.</p>
+          </div>
+        </div>
+      </section>
+
+      <main class="py-16 sm:py-24">
+        <div class="container-x max-w-[1120px]">
+          <div class="grid lg:grid-cols-[1fr_380px] gap-8 lg:gap-12 items-start">
+
+            <div class="relative min-w-0">
+              <span class="hidden sm:block absolute left-[23px] top-8 bottom-8 w-px bg-[var(--line)]"></span>
+              <div class="space-y-6">
+
+                <div class="step done flex gap-4 sm:gap-5" data-step="1">
+                  <div class="step-num relative z-10"><span class="num">01</span><i class="ri-check-line tick"></i></div>
+                  <div class="flex-1 min-w-0 cc-card p-6 sm:p-8">
+                    <div class="flex items-start justify-between gap-4">
+                      <div>
+                        <p class="font-secondary text-[12px] tracking-[1.5px] text-[var(--accent)] font-semibold">Your Space</p>
+                      </div>
+                      <span class="hidden sm:inline-flex shrink-0 items-center gap-2 rounded-full bg-[var(--input)] border border-[var(--line)] text-[#6B5D4B] px-3.5 py-1.5 text-[12px] font-medium"><i class="ri-ruler-2-line"></i> 500 – 5,000 sq.ft</span>
+                    </div>
+                    <div class="relative mt-11 mb-1" id="sliderWrap">
+                      <div id="bubble" class="absolute -top-9 -translate-x-1/2 bg-[var(--ink)] text-white text-[13px] font-semibold px-3 py-1 rounded-full whitespace-nowrap">1,550 sq.ft</div>
+                      <input id="areaRange" type="range" min="500" max="5000" step="50" value="1550" class="range">
+                    </div>
+                    <div class="flex justify-between font-secondary text-[13px] text-[#8a8078]"><span>500 sq.ft</span><span>5,000 sq.ft</span></div>
+                  </div>
+                </div>
+
+                <div class="step done flex gap-4 sm:gap-5" data-step="2">
+                  <div class="step-num relative z-10"><span class="num">02</span><i class="ri-check-line tick"></i></div>
+                  <div class="flex-1 min-w-0 cc-card p-6 sm:p-8">
+                    <p class="font-secondary text-[12px] tracking-[1.5px] text-[var(--accent)] font-semibold">Home Configuration</p>
+                    <div class="mt-6 flex gap-3 overflow-x-auto pb-1 -mx-1 px-1" id="bhkGroup">
+                      <button type="button" class="seg flex-1 min-w-[86px]" data-bhk="1 BHK">1 BHK</button>
+                      <button type="button" class="seg is-selected flex-1 min-w-[86px]" data-bhk="2 BHK">2 BHK</button>
+                      <button type="button" class="seg flex-1 min-w-[86px]" data-bhk="3 BHK">3 BHK</button>
+                      <button type="button" class="seg flex-1 min-w-[86px]" data-bhk="4 BHK">4 BHK</button>
+                      <button type="button" class="seg flex-1 min-w-[86px]" data-bhk="Villa">Villa</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step done flex gap-4 sm:gap-5" data-step="3">
+                  <div class="step-num relative z-10"><span class="num">03</span><i class="ri-check-line tick"></i></div>
+                  <div class="flex-1 min-w-0 cc-card p-6 sm:p-8">
+                    <p class="font-secondary text-[12px] tracking-[1.5px] text-[var(--accent)] font-semibold">Select Package</p>
+                    <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-4" id="tierGroup">
+                      <button type="button" class="tier" data-rate="800" data-name="Essential">
+                        <div class="tier-panel">
+                          <span class="tier-badge">Essential</span>
+                          <p class="tier-price">₹800<span class="unit">/sq.ft</span></p>
+                        </div>
+                        <p class="tier-sub">Perfect for budget-conscious</p>
+                        <ul class="feat"><li><i class="ri-check-line"></i>Modular Kitchen</li><li><i class="ri-check-line"></i>Wardrobes</li><li><i class="ri-check-line"></i>Basic Lighting</li><li><i class="ri-check-line"></i>Wall Paint</li></ul>
+                      </button>
+                      <button type="button" class="tier is-selected mt-3 sm:mt-0" data-rate="1200" data-name="Premium">
+                        <div class="tier-panel">
+                          <span class="tier-badge">Premium</span>
+                          <p class="tier-price">₹1200<span class="unit">/sq.ft</span></p>
+                        </div>
+                        <p class="tier-sub">Best value for money</p>
+                        <ul class="feat"><li><i class="ri-check-line"></i>Designer Kitchen</li><li><i class="ri-check-line"></i>Custom Wardrobes</li><li><i class="ri-check-line"></i>False Ceiling</li><li><i class="ri-check-line"></i>Decorative Lighting</li><li><i class="ri-check-line"></i>TV Unit &amp; Study</li></ul>
+                      </button>
+                      <button type="button" class="tier" data-rate="1800" data-name="Luxury">
+                        <div class="tier-panel">
+                          <span class="tier-badge">Luxury</span>
+                          <p class="tier-price">₹1800<span class="unit">/sq.ft</span></p>
+                        </div>
+                        <p class="tier-sub">Ultimate premium experience</p>
+                        <ul class="feat"><li><i class="ri-check-line"></i>All Premium Features</li><li><i class="ri-check-line"></i>Smart Home Integration</li><li><i class="ri-check-line"></i>Imported Materials</li><li><i class="ri-check-line"></i>3D Visualization</li><li><i class="ri-check-line"></i>Dedicated Designer</li></ul>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step flex gap-4 sm:gap-5" data-step="4">
+                  <div class="step-num relative z-10"><span class="num">04</span><i class="ri-check-line tick"></i></div>
+                  <div class="flex-1 min-w-0 cc-card p-6 sm:p-8">
+                    <div class="flex items-start justify-between gap-4">
+                      <div>
+                        <p class="font-secondary text-[12px] tracking-[1.5px] text-[var(--accent)] font-semibold">Customize Your Interiors</p>
+                      </div>
+                      <span id="addonCount" class="shrink-0 rounded-full bg-[var(--input)] border border-[var(--line)] text-[#6B5D4B] px-3.5 py-1.5 text-[12px] font-medium">0 selected</span>
+                    </div>
+                    <div class="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-4" id="addonGroup">
+                      <label class="pkg" data-price="35000" data-name="Pooja Unit"><input type="checkbox" class="sr-only"><span class="pkg-check"><i class="ri-check-line"></i></span><span class="pkg-icon"><i class="ri-fire-line"></i></span><p class="font-secondary font-semibold text-[15px] mt-4">Pooja Unit</p><p class="pkg-price font-secondary text-[13px] text-[#8a8078] mt-1"><span class="from">From ₹35,000</span><span class="plus">+ ₹35,000</span></p></label>
+                      <label class="pkg" data-price="45000" data-name="Crockery Unit"><input type="checkbox" class="sr-only"><span class="pkg-check"><i class="ri-check-line"></i></span><span class="pkg-icon"><i class="ri-archive-2-line"></i></span><p class="font-secondary font-semibold text-[15px] mt-4">Crockery Unit</p><p class="pkg-price font-secondary text-[13px] text-[#8a8078] mt-1"><span class="from">From ₹45,000</span><span class="plus">+ ₹45,000</span></p></label>
+                      <label class="pkg" data-price="25000" data-name="Shoe Rack"><input type="checkbox" class="sr-only"><span class="pkg-check"><i class="ri-check-line"></i></span><span class="pkg-icon"><i class="ri-footprint-line"></i></span><p class="font-secondary font-semibold text-[15px] mt-4">Shoe Rack</p><p class="pkg-price font-secondary text-[13px] text-[#8a8078] mt-1"><span class="from">From ₹25,000</span><span class="plus">+ ₹25,000</span></p></label>
+                      <label class="pkg" data-price="55000" data-name="Bar Unit"><input type="checkbox" class="sr-only"><span class="pkg-check"><i class="ri-check-line"></i></span><span class="pkg-icon"><i class="ri-goblet-line"></i></span><p class="font-secondary font-semibold text-[15px] mt-4">Bar Unit</p><p class="pkg-price font-secondary text-[13px] text-[#8a8078] mt-1"><span class="from">From ₹55,000</span><span class="plus">+ ₹55,000</span></p></label>
+                      <label class="pkg" data-price="40000" data-name="Wallpaper"><input type="checkbox" class="sr-only"><span class="pkg-check"><i class="ri-check-line"></i></span><span class="pkg-icon"><i class="ri-brush-4-line"></i></span><p class="font-secondary font-semibold text-[15px] mt-4">Wallpaper</p><p class="pkg-price font-secondary text-[13px] text-[#8a8078] mt-1"><span class="from">From ₹40,000</span><span class="plus">+ ₹40,000</span></p></label>
+                      <label class="pkg" data-price="30000" data-name="Window Blinds"><input type="checkbox" class="sr-only"><span class="pkg-check"><i class="ri-check-line"></i></span><span class="pkg-icon"><i class="ri-window-2-line"></i></span><p class="font-secondary font-semibold text-[15px] mt-4">Window Blinds</p><p class="pkg-price font-secondary text-[13px] text-[#8a8078] mt-1"><span class="from">From ₹30,000</span><span class="plus">+ ₹30,000</span></p></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step flex gap-4 sm:gap-5" data-step="5">
+                  <div class="step-num relative z-10"><span class="num">05</span><i class="ri-check-line tick"></i></div>
+                  <div class="flex-1 min-w-0 cc-card p-6 sm:p-8">
+                    <p class="font-secondary text-[12px] tracking-[1.5px] text-[var(--accent)] font-semibold">Get Your Estimate</p>
+                    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div><label class="block font-secondary text-[13px] font-medium text-[#6B5D4B] mb-2">Full Name *</label><input id="fName" type="text" placeholder="Your name" class="field"></div>
+                      <div><label class="block font-secondary text-[13px] font-medium text-[#6B5D4B] mb-2">Phone Number *</label><input id="fPhone" type="tel" inputmode="numeric" placeholder="10-digit number" class="field"></div>
+                      <div><label class="block font-secondary text-[13px] font-medium text-[#6B5D4B] mb-2">City *</label><input id="fCity" type="text" placeholder="Your city" class="field"></div>
+                      <div><label class="block font-secondary text-[13px] font-medium text-[#6B5D4B] mb-2">Pincode *</label><input id="fPin" type="text" inputmode="numeric" placeholder="6-digit pincode" class="field"></div>
+                    </div>
+                    <p id="formError" class="mt-4 font-secondary text-[13px] text-[#c0392b]" hidden></p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <aside class="lg:sticky lg:top-24 min-w-0">
+              <div class="cc-card overflow-hidden">
+                <div class="relative bg-[var(--ink)] h-[150px] text-white px-7 pt-6 pb-12 overflow-hidden">
+                  <img class="absolute inset-0 w-full h-full object-cover" src="https://framerusercontent.com/images/wbFsRFZnyynReJKLyWU4J5GvV0.png?scale-down-to=4096&width=5504&height=3072" alt="">
+                </div>
+
+                <div class="relative -mt-6 bg-[var(--card)] rounded-t-[20px] p-6">
+                  <div class="space-y-3 font-secondary text-[14px]">
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center gap-3 text-[#6B5D4B]"><span class="w-8 h-8 rounded-lg bg-[var(--input)] flex items-center justify-center text-[#6B5D4B]"><i class="ri-artboard-2-line"></i></span> Area</span>
+                      <span id="sumArea" class="font-semibold text-[var(--ink)]">1,550 sq.ft</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center gap-3 text-[#6B5D4B]"><span class="w-8 h-8 rounded-lg bg-[var(--input)] flex items-center justify-center text-[#6B5D4B]"><i class="ri-building-2-line"></i></span> Configuration</span>
+                      <span id="sumBhk" class="font-semibold text-[var(--ink)]">2 BHK</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center gap-3 text-[#6B5D4B]"><span class="w-8 h-8 rounded-lg bg-[var(--input)] flex items-center justify-center text-[#6B5D4B]"><i class="ri-plant-line"></i></span> Base rate</span>
+                      <span id="sumRate" class="font-semibold text-[var(--ink)]">₹1,200/sq.ft</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center gap-3 text-[#6B5D4B]"><span class="w-8 h-8 rounded-lg bg-[var(--input)] flex items-center justify-center text-[#6B5D4B]"><i class="ri-star-line"></i></span> Add-ons</span>
+                      <span id="sumAddons" class="font-semibold text-[var(--ink)]">₹0</span>
+                    </div>
+
+                    <div class="border-t border-dashed border-[var(--line)] my-1"></div>
+
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center gap-3 text-[#6B5D4B]"><span class="w-8 h-8 rounded-lg bg-[var(--input)] flex items-center justify-center text-[#6B5D4B]"><i class="ri-home-4-line"></i></span> Interior</span>
+                      <span id="sumBase" class="font-semibold text-[var(--ink)]">₹18,60,000</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="flex items-center gap-3 text-[#6B5D4B]"><span class="w-8 h-8 rounded-lg bg-[var(--input)] flex items-center justify-center text-[#6B5D4B]"><i class="ri-shopping-bag-3-line"></i></span> Add-ons total</span>
+                      <span id="sumAddTotal" class="font-semibold text-[var(--ink)]">₹0</span>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 rounded-xl bg-[var(--input)] border border-[var(--line)] px-5 py-3.5 flex items-center justify-between">
+                    <span class="font-primary text-[22px] text-[var(--ink)]">Total</span>
+                    <span id="sumTotal" class="font-primary text-[24px] text-[var(--accent)]">₹18,60,000</span>
+                  </div>
+
+                  <button id="calcBtn" type="button" class="summary-cta group mt-4 w-full rounded-xl bg-gradient-to-b from-[#9a7c54] to-[#6f5a41] hover:brightness-105 text-white font-secondary font-semibold text-[15px] py-3.5 flex items-center justify-center gap-2 transition-all">Get Detailed Quote <span class="cta-arrow" aria-hidden="true">→</span></button>
+
+                  <div id="successBox" class="mt-4 rounded-xl bg-[var(--input)] border border-[var(--line)] p-4 text-center" hidden>
+                    <p class="font-secondary text-[14px] text-[var(--ink)] font-semibold">Thank you, <span id="successName">friend</span>!</p>
+                    <p class="font-secondary text-[13px] text-[#8a8078] mt-1">Our design team will call you shortly to schedule a site visit.</p>
+                  </div>
+                  <p id="formError2" class="mt-3 font-secondary text-[13px] text-[#c0392b] text-center" hidden></p>
+
+                  <p class="mt-4 font-secondary text-[12px] text-[#8a8078] text-center flex items-center justify-center gap-1.5"><i class="ri-shield-check-line text-[var(--accent)]"></i> Your details are safe with us</p>
+                </div>
+              </div>
+            </aside>
+
+          </div>
+        </div>
+      </main>
+
+      <%- include('../partials/cta') %>
+      <%- include('../partials/footer') %>
+
+      <div id="mobileBar" class="lg:hidden fixed bottom-0 left-0 w-full z-[80] px-3 pb-3 pointer-events-none">
+        <div class="pointer-events-auto max-w-[560px] mx-auto cc-card !rounded-2xl shadow-[0_-6px_30px_-10px_rgba(41,37,32,0.35)] flex items-center gap-3 px-4 py-3">
+          <div class="min-w-0">
+            <p class="font-secondary text-[11px] tracking-[1.5px] uppercase text-[#8a8078] font-semibold leading-none">Estimated</p>
+            <p id="barTotal" class="font-primary text-[22px] leading-none mt-1 text-[var(--ink)] truncate">₹18,60,000</p>
+          </div>
+          <button id="barBtn" type="button" class="ml-auto shrink-0 rounded-xl bg-gradient-to-b from-[#9a7c54] to-[#6f5a41] text-white font-secondary font-semibold text-[14px] px-5 py-3 flex items-center gap-2">Get Quote <span aria-hidden="true">→</span></button>
+        </div>
+      </div>
+
+    </div>
+
+    <script>
+      const sideMenu = document.getElementById("sideMenu");
+      const menuOverlay = document.getElementById("menuOverlay");
+      document.getElementById("openMenuBtn").addEventListener("click", () => { sideMenu.classList.remove("-translate-x-full"); menuOverlay.classList.remove("hidden"); document.documentElement.style.overflow = "hidden"; });
+      const closeMenu = () => { sideMenu.classList.add("-translate-x-full"); menuOverlay.classList.add("hidden"); document.documentElement.style.overflow = ""; };
+      document.getElementById("closeMenuBtn").addEventListener("click", closeMenu);
+      menuOverlay.addEventListener("click", closeMenu);
+      document.querySelectorAll(".menu-link").forEach((l) => l.addEventListener("click", closeMenu));
+
+      const mainNav = document.getElementById("mainNav");
+      mainNav.style.transition = "transform 0.4s ease, background-color 0.3s ease, box-shadow 0.3s ease";
+      let lastScrollY = window.scrollY;
+      function onNavScroll() {
+        const y = window.scrollY;
+        if (y > 40) { mainNav.style.backgroundColor = "rgba(255,255,255,0.72)"; mainNav.style.backdropFilter = "blur(12px)"; mainNav.style.webkitBackdropFilter = "blur(12px)"; mainNav.style.boxShadow = "0 6px 20px rgba(0,0,0,0.06)"; mainNav.style.color = "#2b2724"; }
+        else { mainNav.style.backgroundColor = ""; mainNav.style.backdropFilter = ""; mainNav.style.webkitBackdropFilter = ""; mainNav.style.boxShadow = ""; mainNav.style.color = ""; }
+        const d = y - lastScrollY;
+        if (Math.abs(d) > 8) { mainNav.style.transform = (d > 0 && y > 80) ? "translateY(-100%)" : "translateY(0)"; lastScrollY = y; }
+      }
+      onNavScroll(); window.addEventListener("scroll", onNavScroll, { passive: true });
+    </script>
+
+    <script>
+      const inr = (n) => "₹" + Math.round(n).toLocaleString("en-IN");
+      const range = document.getElementById("areaRange");
+      const bubble = document.getElementById("bubble");
+      let bhk = "2 BHK";
+      let rate = 1200;
+      let submitted = false;
+
+      function paintRange() {
+        const pct = ((range.value - range.min) / (range.max - range.min)) * 100;
+        range.style.background = "linear-gradient(to right, #8B6F47 " + pct + "%, #E5DED4 " + pct + "%)";
+        bubble.textContent = Number(range.value).toLocaleString("en-IN") + " sq.ft";
+        const thumb = 26;
+        const x = (pct / 100) * (range.offsetWidth - thumb) + thumb / 2;
+        bubble.style.left = x + "px";
+      }
+      range.addEventListener("input", () => { paintRange(); recalc(); });
+      window.addEventListener("resize", paintRange);
+
+      document.querySelectorAll(".seg").forEach((b) => b.addEventListener("click", () => {
+        document.querySelectorAll(".seg").forEach((x) => x.classList.remove("is-selected"));
+        b.classList.add("is-selected");
+        bhk = b.dataset.bhk;
+        recalc();
+      }));
+
+      document.querySelectorAll(".tier").forEach((t) => t.addEventListener("click", () => {
+        document.querySelectorAll(".tier").forEach((x) => x.classList.remove("is-selected"));
+        t.classList.add("is-selected");
+        rate = parseFloat(t.dataset.rate);
+        recalc();
+      }));
+
+      document.querySelectorAll(".pkg").forEach((a) => {
+        const cb = a.querySelector('input');
+        cb.addEventListener("change", () => { a.classList.toggle("is-selected", cb.checked); recalc(); });
+      });
+
+      function selectedAddons() {
+        const arr = [];
+        document.querySelectorAll(".pkg").forEach((a) => {
+          if (a.querySelector('input').checked) arr.push({ name: a.dataset.name, price: parseFloat(a.dataset.price) });
+        });
+        return arr;
+      }
+
+      const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      function animateNum(el, to) {
+        if (!el) return;
+        const from = parseFloat(el.dataset.v || "0");
+        el.dataset.v = to;
+        if (from === to || reduceMotion || document.hidden) { el.textContent = inr(to); return; }
+        const start = performance.now(), dur = 450;
+        function tick(now) {
+          const p = Math.min((now - start) / dur, 1);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = inr(from + (to - from) * eased);
+          if (p < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function updateSteps() {
+        const n = selectedAddons().length;
+        document.querySelector('[data-step="1"]').classList.add("done");
+        document.querySelector('[data-step="2"]').classList.toggle("done", !!bhk);
+        document.querySelector('[data-step="3"]').classList.add("done");
+        document.querySelector('[data-step="4"]').classList.toggle("done", n > 0);
+        document.querySelector('[data-step="5"]').classList.toggle("done", submitted);
+      }
+
+      function recalc() {
+        const area = Number(range.value);
+        const base = area * rate;
+        const addons = selectedAddons();
+        const addT = addons.reduce((s, a) => s + a.price, 0);
+        const total = base + addT;
+
+        document.getElementById("sumArea").textContent = area.toLocaleString("en-IN") + " sq.ft";
+        document.getElementById("sumBhk").textContent = bhk;
+        document.getElementById("sumRate").textContent = "₹" + rate.toLocaleString("en-IN") + "/sq.ft";
+        document.getElementById("sumAddons").textContent = inr(addT);
+        document.getElementById("sumBase").textContent = inr(base);
+        document.getElementById("sumAddTotal").textContent = inr(addT);
+        document.getElementById("addonCount").textContent = addons.length + " selected";
+
+        animateNum(document.getElementById("sumTotal"), total);
+        animateNum(document.getElementById("barTotal"), total);
+
+        updateSteps();
+      }
+
+      const err = document.getElementById("formError");
+      document.getElementById("calcBtn").addEventListener("click", async () => {
+        const name = document.getElementById("fName").value.trim();
+        const phone = document.getElementById("fPhone").value.trim();
+        const city = document.getElementById("fCity").value.trim();
+        const pin = document.getElementById("fPin").value.trim();
+        const problems = [];
+        if (!name) problems.push("full name");
+        if (!/^\d{10}$/.test(phone)) problems.push("a valid 10-digit phone");
+        if (!city) problems.push("city");
+        if (!/^\d{6}$/.test(pin)) problems.push("a valid 6-digit pincode");
+        if (problems.length) { err.textContent = "Please enter your " + problems.join(", ") + "."; err.hidden = false; document.getElementById("successBox").hidden = true; submitted = false; updateSteps(); return; }
+        err.hidden = true;
+
+        const area = Number(range.value);
+        const selectedTier = document.querySelector(".tier.is-selected");
+        const pkgName = selectedTier ? selectedTier.dataset.name : "";
+        const totalText = document.getElementById("sumTotal").textContent;
+
+        try {
+          await fetch("/api/cost-calculator", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, phone, city, pincode: pin, area: area + " sq.ft", bhk, package: pkgName, estimatedTotal: totalText }),
+          });
+        } catch (e) { /* still show success to the user; lead capture failure shouldn't block them */ }
+
+        submitted = true;
+        document.getElementById("successName").textContent = name.split(" ")[0];
+        document.getElementById("successBox").hidden = false;
+        document.getElementById("fName").value = "";
+        document.getElementById("fPhone").value = "";
+        document.getElementById("fCity").value = "";
+        document.getElementById("fPin").value = "";
+        updateSteps();
+      });
+
+      paintRange(); recalc();
+
+      const mobileBar = document.getElementById("mobileBar");
+      const heroEl = document.getElementById("calc-hero");
+      function toggleMobileBar() {
+        const past = window.scrollY > (heroEl ? heroEl.offsetHeight - 120 : 400);
+        const nearFooter = (window.innerHeight + window.scrollY) > (document.body.offsetHeight - 260);
+        mobileBar.classList.toggle("is-visible", past && !nearFooter);
+      }
+      toggleMobileBar();
+      window.addEventListener("scroll", toggleMobileBar, { passive: true });
+      window.addEventListener("resize", toggleMobileBar);
+      document.getElementById("barBtn").addEventListener("click", () => {
+        document.getElementById("fName").scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(() => document.getElementById("fName").focus({ preventScroll: true }), 500);
+      });
+    </script>
+
+  </body>
+</html>

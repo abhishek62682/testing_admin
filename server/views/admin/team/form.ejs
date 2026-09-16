@@ -1,0 +1,27 @@
+<%- include('../partials/_head') %>
+
+<h1><%= member ? 'Edit Team Member' : 'New Team Member' %></h1>
+
+<form method="POST" action="<%= member ? '/admin/team/' + member._id : '/admin/team' %>" enctype="multipart/form-data">
+  <div class="card">
+    <div class="grid-2">
+      <div class="field-group"><label>Name</label><input type="text" name="name" value="<%= member ? member.name : '' %>" required></div>
+      <div class="field-group"><label>Role / Title</label><input type="text" name="role" value="<%= member ? member.role : '' %>"></div>
+    </div>
+    <div class="field-group">
+      <label>Photo</label>
+      <% if (member && member.image) { %><img class="current-img" src="<%= member.image %>"><% } %>
+      <input type="file" name="imageFile" accept="image/*">
+      <p class="hint">Or paste an image URL instead:</p>
+      <input type="url" name="image" value="<%= member ? member.image : '' %>" placeholder="https://...">
+    </div>
+    <div class="field-group"><label>Display Order</label><input type="number" name="order" value="<%= member ? member.order : 0 %>"></div>
+    <div class="field-group">
+      <label><input type="checkbox" name="published" <%= (!member || member.published) ? 'checked' : '' %> style="width:auto; display:inline; margin-right:6px;"> Published</label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary"><%= member ? 'Save Changes' : 'Add Team Member' %></button>
+  <a class="btn btn-secondary" href="/admin/team">Cancel</a>
+</form>
+
+<%- include('../partials/_foot') %>

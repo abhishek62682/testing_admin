@@ -1,0 +1,33 @@
+<%- include('../partials/_head') %>
+
+<div class="top-bar">
+  <h1 style="margin:0;">Services</h1>
+  <a class="btn btn-primary" href="/admin/services/new">+ Add Service</a>
+</div>
+
+<div class="card">
+  <table>
+    <thead><tr><th></th><th>Image</th><th>Title</th><th>Category</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% services.forEach(function(s) { %>
+        <tr>
+          <td></td>
+          <td><img class="thumb" src="<%= s.image %>" onerror="this.style.visibility='hidden'"></td>
+          <td><%= s.title %></td>
+          <td><%= s.category %></td>
+          <td><%= s.order %></td>
+          <td><span class="badge <%= s.published ? 'on' : '' %>"><%= s.published ? 'Published' : 'Draft' %></span></td>
+          <td class="actions">
+            <a class="btn btn-secondary btn-sm" href="/admin/services/<%= s._id %>/edit">Edit</a>
+            <form class="inline" method="POST" action="/admin/services/<%= s._id %>/delete" onsubmit="return confirm('Delete this service?');">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (!services.length) { %><tr><td colspan="7">No services yet.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/_foot') %>

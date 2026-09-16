@@ -1,0 +1,123 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title><%= pageTitle || settings.seoTitle %></title>
+<meta name="description" content="<%= pageDescription || settings.seoDescription %>">
+<link rel="canonical" href="<%= canonicalUrl %>">
+<meta name="theme-color" content="#5d5346">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="<%= settings.businessName %>">
+<meta property="og:title" content="<%= pageTitle || settings.seoTitle %>">
+<meta property="og:description" content="<%= pageDescription || settings.seoDescription %>">
+<meta property="og:url" content="<%= canonicalUrl %>">
+<meta property="og:image" content="<%= settings.heroImage %>">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="<%= pageTitle || settings.seoTitle %>">
+<meta name="twitter:description" content="<%= pageDescription || settings.seoDescription %>">
+<meta name="twitter:image" content="<%= settings.heroImage %>">
+
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+
+<link rel="stylesheet" href="/assets/css/index.css">
+
+<style type="text/tailwindcss">
+  @theme {
+    --color-clifford: #da373d;
+    --font-secondary: "Manrope", sans-serif;
+    --font-primary: "Hedvig Letters Serif", serif;
+    --text-csm: 16px;
+  }
+
+  body {
+    font-family: "Manrope", sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+  }
+</style>
+
+<!-- Component-specific styles -->
+<style>
+  .container-x {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding: 0 25px;
+    position: relative;
+  }
+  .container-row {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding: 0 25px;
+    position: relative;
+    display: flex;
+    flex-flow: row;
+    flex: none;
+    gap: 100px;
+    place-content: center;
+    align-items: center;
+    overflow: clip;
+    height: min-content;
+  }
+
+  .project-image {
+    overflow: hidden;
+  }
+  .project-image img {
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+  .project:hover .project-image img,
+  .project-image:hover img {
+    transform: scale(1.06);
+  }
+
+  .reveal-up {
+    opacity: 0;
+    transform: translateY(36px);
+  }
+
+  .fab-stack {
+    position: fixed;
+    right: 18px;
+    bottom: 22px;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+  .fab-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 22px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .fab-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 26px rgba(0,0,0,0.32);
+  }
+  .fab-whatsapp { background: #25D366; }
+  .fab-call { background: #5d5346; }
+
+  @keyframes fabPulse {
+    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.45); }
+    70% { box-shadow: 0 0 0 14px rgba(37, 211, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+  }
+  .fab-whatsapp { animation: fabPulse 2.6s infinite; }
+</style>

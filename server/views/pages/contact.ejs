@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('../partials/head') %>
+    <style>
+      .cc-input { width:100%; height:52px; border:1px solid #e7ddcc; background:#faf7f2; border-radius:10px; padding:0 16px; font-family:"Manrope"; font-size:15px; color:#2b2724; outline:none; transition:border-color .2s ease, box-shadow .2s ease; }
+      textarea.cc-input { height:auto; padding:14px 16px; resize:vertical; }
+      .cc-input::placeholder { color:#b3aa9e; }
+      .cc-input:focus { border-color:#5d5346; background:#fff; box-shadow:0 0 0 4px rgba(93,83,70,0.12); }
+
+      .line-input { width:100%; background:transparent; border:0; border-bottom:1px solid #d8ccb8; padding:14px 2px; font-family:"Manrope"; font-size:16px; color:#2b2724; outline:none; transition:border-color .2s ease; }
+      .line-input::placeholder { color:#9a9088; }
+      .line-input:focus { border-color:#5d5346; }
+      textarea.line-input { resize:vertical; min-height:70px; }
+    </style>
+  </head>
+
+  <body class="bg-[#efe9df] text-[#2b2724]">
+    <div class="root relative">
+
+      <%- include('../partials/menu') %>
+      <%- include('../partials/nav', { navTheme: 'black' }) %>
+
+      <!-- CONTACT (editorial) -->
+      <main>
+        <section class="relative min-h-[100svh]">
+          <div class="grid lg:grid-cols-2 items-stretch">
+
+            <div class="px-6 sm:px-10 lg:pl-16 lg:pr-24 pt-28 sm:pt-32 pb-14 lg:pt-[160px] lg:pb-[120px]">
+              <div class="max-w-[560px] lg:ml-auto w-full">
+
+                <h1 class="font-primary font-normal text-[36px] leading-[42px] sm:text-[56px] sm:leading-[62px] lg:text-[72px] lg:leading-[80px] text-[#2b2724] mt-4">Begin the Dialogue</h1>
+                <p class="font-secondary text-[15px] leading-[1.7] text-[#6b6259] mt-6 max-w-[440px]">Connect with our studio to discuss an upcoming interior, a new build, or a general collaboration.</p>
+
+                <div class="mt-12 grid grid-cols-2 gap-x-8 gap-y-9 max-w-[480px]">
+                  <div class="border-l border-black/15 pl-4">
+                    <p class="font-secondary text-[11px] tracking-[1.5px] uppercase text-[#857b70]">Address</p>
+                    <p class="font-secondary text-[15px] leading-[1.5] text-[#2b2724] mt-2"><%= settings.address %></p>
+                  </div>
+                  <div class="border-l border-black/15 pl-4">
+                    <p class="font-secondary text-[11px] tracking-[1.5px] uppercase text-[#857b70]">Phone</p>
+                    <a href="tel:<%= settings.phone.replace(/\s+/g,'') %>" class="font-secondary text-[15px] text-[#2b2724] mt-2 block hover:text-[#5d5346] transition-colors"><%= settings.phone %></a>
+                  </div>
+                  <div class="border-l border-black/15 pl-4">
+                    <p class="font-secondary text-[11px] tracking-[1.5px] uppercase text-[#857b70]">Email</p>
+                    <a href="mailto:<%= settings.email %>" class="font-secondary text-[15px] text-[#2b2724] mt-2 block break-words hover:text-[#5d5346] transition-colors"><%= settings.email %></a>
+                  </div>
+                  <div class="border-l border-black/15 pl-4">
+                    <p class="font-secondary text-[11px] tracking-[1.5px] uppercase text-[#857b70]">Website</p>
+                    <a href="<%= siteUrl %>" target="_blank" rel="noopener" class="font-secondary text-[15px] text-[#2b2724] mt-2 block hover:text-[#5d5346] transition-colors"><%= siteUrl.replace(/^https?:\/\//, '') %></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative min-h-[100svh]">
+              <img class="absolute inset-0 w-full h-full object-cover" src="https://framerusercontent.com/images/pR1yQf79DAV5LnRLYc0IqQzX05I.png?scale-down-to=4096&width=5224&height=3072" alt="<%= settings.businessName %> interior">
+            </div>
+          </div>
+
+          <div class="px-6 sm:px-10 lg:px-0 -mt-8 lg:mt-0 lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:right-[6%] w-full lg:w-[46%] max-w-[560px] mx-auto lg:mx-0">
+            <div class="bg-white shadow-[0_40px_80px_-40px_rgba(43,39,36,0.45)] p-8 sm:p-10">
+              <div class="space-y-6">
+                <input id="cName" type="text" placeholder="Enter name" class="line-input">
+                <input id="cEmail" type="email" placeholder="Email Address" class="line-input">
+                <input id="cPhone" type="tel" inputmode="numeric" placeholder="Enter phone number" class="line-input">
+                <textarea id="cMsg" rows="3" placeholder="Project Details" class="line-input"></textarea>
+
+                <button id="cSend" type="button" class="w-full bg-[#5d5346] hover:bg-[#4a4238] text-white font-secondary font-semibold text-[14px] tracking-[1.5px] uppercase py-4 transition-colors">
+                  Submit Enquiry
+                </button>
+
+                <p id="cErr" class="font-secondary text-[13px] text-[#c0392b]" hidden></p>
+                <div id="cOk" class="bg-[#f1ebe1] border border-[#dcd0be] p-4" hidden>
+                  <p class="font-secondary text-[14px] font-semibold text-[#5d5346]">Thank you, <span id="cOkName">friend</span>!</p>
+                  <p class="font-secondary text-[13px] text-[#6b6259] mt-1">Your enquiry has been noted — our team will reach out shortly.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <%- include('../partials/cta') %>
+      <%- include('../partials/footer') %>
+
+    </div>
+
+    <script>
+      const sideMenu = document.getElementById("sideMenu");
+      const menuOverlay = document.getElementById("menuOverlay");
+      document.getElementById("openMenuBtn").addEventListener("click", () => { sideMenu.classList.remove("-translate-x-full"); menuOverlay.classList.remove("hidden"); document.documentElement.style.overflow="hidden"; });
+      const closeMenu = () => { sideMenu.classList.add("-translate-x-full"); menuOverlay.classList.add("hidden"); document.documentElement.style.overflow=""; };
+      document.getElementById("closeMenuBtn").addEventListener("click", closeMenu);
+      menuOverlay.addEventListener("click", closeMenu);
+      document.querySelectorAll(".menu-link").forEach((l) => l.addEventListener("click", closeMenu));
+
+      const mainNav = document.getElementById("mainNav");
+      mainNav.style.transition = "transform 0.4s ease, background-color 0.3s ease, box-shadow 0.3s ease";
+      let lastY = window.scrollY;
+      function onScroll(){
+        const y = window.scrollY;
+        if (y>40){ mainNav.style.backgroundColor="rgba(255,255,255,0.72)"; mainNav.style.backdropFilter="blur(12px)"; mainNav.style.webkitBackdropFilter="blur(12px)"; mainNav.style.boxShadow="0 6px 20px rgba(0,0,0,0.06)"; mainNav.style.color="#141414"; }
+        else { mainNav.style.backgroundColor=""; mainNav.style.backdropFilter=""; mainNav.style.webkitBackdropFilter=""; mainNav.style.boxShadow=""; mainNav.style.color=""; }
+        const d=y-lastY; if (Math.abs(d)>8){ mainNav.style.transform=(d>0&&y>80)?"translateY(-100%)":"translateY(0)"; lastY=y; }
+      }
+      onScroll(); window.addEventListener("scroll", onScroll, { passive:true });
+
+      document.getElementById("cSend").addEventListener("click", async () => {
+        const name = document.getElementById("cName").value.trim();
+        const email = document.getElementById("cEmail").value.trim();
+        const phone = document.getElementById("cPhone").value.trim();
+        const message = document.getElementById("cMsg").value.trim();
+        const err = document.getElementById("cErr");
+        const btn = document.getElementById("cSend");
+        const probs = [];
+        if (!name) probs.push("your name");
+        if (!phone) probs.push("your contact number");
+        if (probs.length){ err.textContent = "Please enter " + probs.join(" and ") + "."; err.hidden=false; document.getElementById("cOk").hidden=true; return; }
+        err.hidden = true;
+        btn.disabled = true;
+        try {
+          const res = await fetch("/api/contact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, phone, message }),
+          });
+          if (!res.ok) throw new Error("Request failed");
+          document.getElementById("cOkName").textContent = name.split(" ")[0];
+          document.getElementById("cOk").hidden = false;
+          document.getElementById("cName").value = "";
+          document.getElementById("cEmail").value = "";
+          document.getElementById("cPhone").value = "";
+          document.getElementById("cMsg").value = "";
+        } catch (e) {
+          err.textContent = "Something went wrong. Please try again or call us directly.";
+          err.hidden = false;
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    </script>
+
+  </body>
+</html>

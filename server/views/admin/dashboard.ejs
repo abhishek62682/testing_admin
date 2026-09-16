@@ -1,0 +1,50 @@
+<%- include('partials/_head') %>
+
+<h1>Dashboard</h1>
+
+<div class="stat-grid">
+  <a class="stat-card" href="/admin/enquiries" style="position:relative;">
+    <div class="num"><%= counts.enquiriesCount %></div>
+    <div class="label">Total Enquiries</div>
+    <% if (counts.unreadEnquiriesCount) { %><span class="nav-badge" style="position:absolute; top:16px; right:16px;"><%= counts.unreadEnquiriesCount %> new</span><% } %>
+  </a>
+  <a class="stat-card" href="/admin/services"><div class="num"><%= counts.servicesCount %></div><div class="label">Services<% if (counts.draftServicesCount) { %> · <%= counts.draftServicesCount %> draft<% } %></div></a>
+  <a class="stat-card" href="/admin/projects"><div class="num"><%= counts.projectsCount %></div><div class="label">Portfolio Projects</div></a>
+  <a class="stat-card" href="/admin/testimonials"><div class="num"><%= counts.testimonialsCount %></div><div class="label">Testimonials</div></a>
+  <a class="stat-card" href="/admin/team"><div class="num"><%= counts.teamCount %></div><div class="label">Team Members</div></a>
+  <a class="stat-card" href="/admin/gallery"><div class="num"><%= counts.galleryCount %></div><div class="label">Gallery Images</div></a>
+</div>
+
+<div class="top-bar" style="margin-top:28px;">
+  <h3 style="margin:0;">Recent Enquiries</h3>
+  <div style="display:flex; gap:8px;">
+    <a class="btn btn-secondary btn-sm" href="/admin/enquiries">View all</a>
+    <a class="btn btn-primary btn-sm" href="/admin/enquiries/export.xlsx">&#8681; Download Excel</a>
+  </div>
+</div>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Date</th><th>Source</th><th>Name</th><th>Phone</th><th>Details</th></tr></thead>
+    <tbody>
+      <% recentEnquiries.forEach(function(e) { %>
+        <tr style="<%= e.read ? '' : 'background:#fbf6ee;' %>">
+          <td><%= e.createdAt.toLocaleString('en-IN') %></td>
+          <td><span class="badge <%= e.source === 'contact' ? 'on' : '' %>"><%= e.source === 'contact' ? 'Contact' : 'Calculator' %></span></td>
+          <td><%= e.name %></td>
+          <td><a href="tel:<%= e.phone %>"><%= e.phone %></a></td>
+          <td style="font-size:13px; color:#4a453f;">
+            <% if (e.source === 'contact') { %><%= e.message || '—' %><% } else { %><%= e.area %> · <%= e.bhk %> · <strong><%= e.estimatedTotal %></strong><% } %>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (!recentEnquiries.length) { %><tr><td colspan="5">No enquiries yet — they'll show up here as visitors submit the Contact form or Cost Calculator.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<div class="card" style="margin-top:8px;">
+  <p style="margin:0; font-size:14px; color:#4a453f;">Use the sidebar to manage website content. Any change you save here updates the live website immediately — refresh the public site to see it.</p>
+</div>
+
+<%- include('partials/_foot') %>

@@ -1,0 +1,32 @@
+<%- include('../partials/_head') %>
+
+<div class="top-bar">
+  <h1 style="margin:0;">Testimonials</h1>
+  <a class="btn btn-primary" href="/admin/testimonials/new">+ Add Testimonial</a>
+</div>
+
+<div class="card">
+  <table>
+    <thead><tr><th>Image</th><th>Name</th><th>Role/Client</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% testimonials.forEach(function(t) { %>
+        <tr>
+          <td><img class="thumb" src="<%= t.image %>" onerror="this.style.visibility='hidden'"></td>
+          <td><%= t.name %></td>
+          <td><%= t.role %></td>
+          <td><%= t.order %></td>
+          <td><span class="badge <%= t.published ? 'on' : '' %>"><%= t.published ? 'Published' : 'Draft' %></span></td>
+          <td class="actions">
+            <a class="btn btn-secondary btn-sm" href="/admin/testimonials/<%= t._id %>/edit">Edit</a>
+            <form class="inline" method="POST" action="/admin/testimonials/<%= t._id %>/delete" onsubmit="return confirm('Delete this testimonial?');">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (!testimonials.length) { %><tr><td colspan="6">No testimonials yet.</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../partials/_foot') %>

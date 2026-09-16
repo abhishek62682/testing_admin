@@ -1,0 +1,24 @@
+<%- include('../partials/_head') %>
+
+<h1><%= item ? 'Edit Gallery Image' : 'New Gallery Image' %></h1>
+
+<form method="POST" action="<%= item ? '/admin/gallery/' + item._id : '/admin/gallery' %>" enctype="multipart/form-data">
+  <div class="card">
+    <div class="field-group">
+      <label>Image</label>
+      <% if (item && item.image) { %><img class="current-img" src="<%= item.image %>"><% } %>
+      <input type="file" name="imageFile" accept="image/*">
+      <p class="hint">Or paste an image URL instead:</p>
+      <input type="url" name="image" value="<%= item ? item.image : '' %>" placeholder="https://...">
+    </div>
+    <div class="field-group"><label>Caption (optional)</label><input type="text" name="caption" value="<%= item ? item.caption : '' %>"></div>
+    <div class="field-group"><label>Display Order</label><input type="number" name="order" value="<%= item ? item.order : 0 %>"></div>
+    <div class="field-group">
+      <label><input type="checkbox" name="published" <%= (!item || item.published) ? 'checked' : '' %> style="width:auto; display:inline; margin-right:6px;"> Published</label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary"><%= item ? 'Save Changes' : 'Add Image' %></button>
+  <a class="btn btn-secondary" href="/admin/gallery">Cancel</a>
+</form>
+
+<%- include('../partials/_foot') %>

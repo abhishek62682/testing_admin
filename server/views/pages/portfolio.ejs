@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('../partials/head') %>
+    <style>
+      .parallax-img { will-change: transform; }
+    </style>
+  </head>
+
+  <body>
+    <div class="root relative">
+
+      <%- include('../partials/menu') %>
+      <%- include('../partials/nav', { navTheme: 'black' }) %>
+
+      <main class="main-content">
+
+        <!-- PORTFOLIO HERO (parallax) -->
+        <section id="portfolio-hero" class="relative min-h-[100svh] bg-[#f2ede4] overflow-hidden flex items-center justify-center">
+
+          <div class="parallax-img absolute z-[1] top-[10%] left-[13%] w-[14%] max-w-[190px] hidden md:block" data-depth="30">
+            <img class="w-full h-[279px] object-cover" src="https://framerusercontent.com/images/VC4qwfmfo0MFJmeX4tEZEVbnjn8.png?width=1200&height=800" alt="Interior project">
+          </div>
+          <div class="parallax-img absolute z-[1] top-[10%] right-[7%] w-[15%] max-w-[210px] hidden md:block" data-depth="-34">
+            <img class="w-full h-[279px] object-cover" src="https://framerusercontent.com/images/Y2Yp18uPF5BVQ1kFtuBU46jol74.png?width=1200&height=1200" alt="Interior project">
+          </div>
+          <div class="parallax-img absolute z-[1] bottom-[10%] left-[7%] w-[15%] max-w-[200px] hidden md:block" data-depth="42">
+            <img class="w-full h-[279px] object-cover" src="https://framerusercontent.com/images/KnsCNi9u61AcCGrxlpzTM5amLsw.png?width=903&height=665" alt="Interior project">
+          </div>
+          <div class="parallax-img absolute z-[1] bottom-[10%] right-[13%] w-[15%] max-w-[210px] hidden md:block" data-depth="-26">
+            <img class="w-full h-[279px] object-cover" src="https://framerusercontent.com/images/O64BvWg7qKxhwTsoaMwOogOpIws.png?scale-down-to=1024&width=1200&height=1200" alt="Interior project">
+          </div>
+
+          <div class="relative z-[10] container-x text-center py-24">
+            <div class="max-w-[820px] mx-auto space-y-6 sm:space-y-8">
+              <h1 class="font-primary font-normal text-black whitespace-nowrap text-[36px] leading-[42px] sm:text-[56px] sm:leading-[62px] lg:text-[72px] lg:leading-[80px]">
+                Our Portfolio
+              </h1>
+              <p class="font-secondary text-[15px] sm:text-[16px] leading-[1.6] text-black/70 max-w-[440px] mx-auto">
+                A curated collection of projects showcasing our approach to thoughtful, refined interior design.
+              </p>
+              <a href="/#contact" class="menu-link inline-block font-secondary text-[14px] sm:text-[15px] tracking-[1px] uppercase text-black border-b border-black/50 pb-1 hover:opacity-60 transition-opacity">
+                Get in touch
+              </a>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- PROJECTS GRID -->
+        <section id="projects" class="bg-white py-16 sm:py-24 md:py-[100px] lg:py-[125px]">
+          <div class="container-x space-y-10 sm:space-y-14">
+
+            <div class="max-w-[560px] space-y-2.5">
+              <h2 class="font-primary font-normal text-[28px] sm:text-[36px] md:text-[42px] lg:text-[48px] leading-[1.15] text-black">Our Projects</h2>
+              <p class="font-secondary text-[14px] leading-[20px] text-black/60">A showcase of spaces we've designed and built — crafted with precision and a passion for detail.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6.25 md:gap-6 lg:gap-5">
+              <% projects.forEach(function(p) { %>
+                <div class="project group space-y-3 sm:space-y-3.75">
+                  <div class="project-image w-full h-[280px] sm:h-[380px] md:h-[450px] lg:h-[420px]">
+                    <img class="w-full h-full object-cover" src="<%= p.image %>" alt="<%= p.title %>">
+                  </div>
+                  <div class="space-y-1">
+                    <h4 class="font-primary text-[20px] sm:text-[22px] leading-[26px] text-black"><%= p.title %></h4>
+                    <p class="font-secondary text-[14px] leading-[20px] text-black/50"><%= p.category %></p>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <%- include('../partials/cta') %>
+      <%- include('../partials/footer') %>
+
+    </div>
+
+    <script>
+      const sideMenu = document.getElementById("sideMenu");
+      const menuOverlay = document.getElementById("menuOverlay");
+      const openMenuBtn = document.getElementById("openMenuBtn");
+      const closeMenuBtn = document.getElementById("closeMenuBtn");
+      function openMenu() { sideMenu.classList.remove("-translate-x-full"); menuOverlay.classList.remove("hidden"); document.documentElement.style.overflow = "hidden"; }
+      function closeMenu() { sideMenu.classList.add("-translate-x-full"); menuOverlay.classList.add("hidden"); document.documentElement.style.overflow = ""; }
+      openMenuBtn.addEventListener("click", openMenu);
+      closeMenuBtn.addEventListener("click", closeMenu);
+      menuOverlay.addEventListener("click", closeMenu);
+      document.querySelectorAll(".menu-link").forEach((link) => {
+        link.addEventListener("click", (e) => {
+          const href = link.getAttribute("href");
+          if (!href || !href.startsWith("#") || href === "#" || href === "#!") { closeMenu(); return; }
+          e.preventDefault();
+          const targetEl = document.querySelector(href);
+          closeMenu();
+          setTimeout(() => { if (targetEl) targetEl.scrollIntoView({ behavior: "smooth", block: "start" }); }, 400);
+        });
+      });
+    </script>
+
+    <script>
+      const mainNav = document.getElementById("mainNav");
+      mainNav.style.transition = "transform 0.4s ease, background-color 0.3s ease, box-shadow 0.3s ease";
+      let lastScrollY = window.scrollY;
+      const scrollThreshold = 8;
+      function onNavScroll() {
+        const y = window.scrollY;
+        if (y > 40) {
+          mainNav.style.backgroundColor = "rgba(255, 255, 255, 0.72)";
+          mainNav.style.backdropFilter = "blur(12px)";
+          mainNav.style.webkitBackdropFilter = "blur(12px)";
+          mainNav.style.boxShadow = "0 6px 20px rgba(0, 0, 0, 0.06)";
+          mainNav.style.color = "#141414";
+        } else {
+          mainNav.style.backgroundColor = "";
+          mainNav.style.backdropFilter = "";
+          mainNav.style.webkitBackdropFilter = "";
+          mainNav.style.boxShadow = "";
+          mainNav.style.color = "";
+        }
+        const delta = y - lastScrollY;
+        if (Math.abs(delta) > scrollThreshold) {
+          mainNav.style.transform = (delta > 0 && y > 80) ? "translateY(-100%)" : "translateY(0)";
+          lastScrollY = y;
+        }
+      }
+      onNavScroll();
+      window.addEventListener("scroll", onNavScroll, { passive: true });
+    </script>
+
+    <script>
+      (function () {
+        const hero = document.getElementById("portfolio-hero");
+        if (!hero) return;
+        const layers = hero.querySelectorAll(".parallax-img");
+        let targetX = 0, targetY = 0, curX = 0, curY = 0;
+        hero.addEventListener("mousemove", (e) => {
+          const r = hero.getBoundingClientRect();
+          targetX = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+          targetY = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+        });
+        hero.addEventListener("mouseleave", () => { targetX = 0; targetY = 0; });
+        function tick() {
+          curX += (targetX - curX) * 0.08;
+          curY += (targetY - curY) * 0.08;
+          layers.forEach((el) => {
+            const d = parseFloat(el.dataset.depth) || 0;
+            el.style.transform = "translate(" + (curX * d).toFixed(2) + "px, " + (curY * d).toFixed(2) + "px)";
+          });
+          requestAnimationFrame(tick);
+        }
+        tick();
+      })();
+    </script>
+
+  </body>
+</html>

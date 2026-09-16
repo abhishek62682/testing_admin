@@ -1,0 +1,14 @@
+<section class="relative h-[60svh] min-h-[380px] overflow-hidden">
+  <img class="absolute inset-0 w-full h-full object-cover" src="<%= settings.heroImage %>" alt="<%= settings.businessName %> interior">
+  <div class="absolute inset-0 bg-black/55"></div>
+  <div class="relative z-10 h-full flex items-center justify-center text-center text-white px-4">
+    <div class="max-w-[640px] mx-auto space-y-5">
+      <h2 class="font-primary font-normal text-[30px] sm:text-[42px] lg:text-[48px] leading-[1.1]"><%= settings.ctaTitle %></h2>
+      <p class="font-secondary text-[14px] leading-[20px] text-white/85 max-w-[480px] mx-auto"><%= settings.ctaDescription %></p>
+      <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+        <a href="<%= settings.ctaButtonLink %>" class="bg-white text-[#2b2724] font-secondary font-semibold text-[14px] px-7 py-3.5 rounded-xl hover:bg-white/90 transition-colors"><%= settings.ctaButtonText %></a>
+        <a href="/cost-calculator" class="border border-white/60 text-white font-secondary font-semibold text-[14px] px-7 py-3.5 rounded-xl hover:bg-white hover:text-[#2b2724] transition-colors">Cost Calculator</a>
+      </div>
+    </div>
+  </div>
+</section>

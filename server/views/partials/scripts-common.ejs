@@ -1,0 +1,79 @@
+<!-- Mobile / overlay menu toggle -->
+<script>
+  const sideMenu = document.getElementById("sideMenu");
+  const menuOverlay = document.getElementById("menuOverlay");
+  const openMenuBtn = document.getElementById("openMenuBtn");
+  const closeMenuBtn = document.getElementById("closeMenuBtn");
+
+  function openMenu() {
+    sideMenu.classList.remove("-translate-x-full");
+    menuOverlay.classList.remove("hidden");
+    document.documentElement.style.overflow = "hidden";
+  }
+
+  function closeMenu() {
+    sideMenu.classList.add("-translate-x-full");
+    menuOverlay.classList.add("hidden");
+    document.documentElement.style.overflow = "";
+  }
+
+  openMenuBtn.addEventListener("click", openMenu);
+  closeMenuBtn.addEventListener("click", closeMenu);
+  menuOverlay.addEventListener("click", closeMenu);
+
+  document.querySelectorAll(".menu-link").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const href = link.getAttribute("href");
+      if (!href || !href.startsWith("#") || href === "#" || href === "#!") {
+        closeMenu();
+        return;
+      }
+      e.preventDefault();
+      const targetEl = document.querySelector(href);
+      closeMenu();
+      setTimeout(() => {
+        if (targetEl) targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 400);
+    });
+  });
+</script>
+
+<!-- Fixed navbar: hide on scroll down, show on scroll up (+ bg once scrolled) -->
+<script>
+  const mainNav = document.getElementById("mainNav");
+  mainNav.style.transition = "transform 0.4s ease, background-color 0.3s ease, box-shadow 0.3s ease";
+
+  let lastScrollY = window.scrollY;
+  const scrollThreshold = 8;
+
+  function onNavScroll() {
+    const y = window.scrollY;
+
+    if (y > 40) {
+      mainNav.style.backgroundColor = "rgba(255, 255, 255, 0.72)";
+      mainNav.style.backdropFilter = "blur(12px)";
+      mainNav.style.webkitBackdropFilter = "blur(12px)";
+      mainNav.style.boxShadow = "0 6px 20px rgba(0, 0, 0, 0.06)";
+      mainNav.style.color = "#141414";
+    } else {
+      mainNav.style.backgroundColor = "";
+      mainNav.style.backdropFilter = "";
+      mainNav.style.webkitBackdropFilter = "";
+      mainNav.style.boxShadow = "";
+      mainNav.style.color = "";
+    }
+
+    const delta = y - lastScrollY;
+    if (Math.abs(delta) > scrollThreshold) {
+      if (delta > 0 && y > 80) {
+        mainNav.style.transform = "translateY(-100%)";
+      } else {
+        mainNav.style.transform = "translateY(0)";
+      }
+      lastScrollY = y;
+    }
+  }
+
+  onNavScroll();
+  window.addEventListener("scroll", onNavScroll, { passive: true });
+</script>

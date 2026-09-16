@@ -1,0 +1,27 @@
+<%- include('../partials/_head') %>
+
+<h1><%= project ? 'Edit Project' : 'New Project' %></h1>
+
+<form method="POST" action="<%= project ? '/admin/projects/' + project._id : '/admin/projects' %>" enctype="multipart/form-data">
+  <div class="card">
+    <div class="grid-2">
+      <div class="field-group"><label>Title</label><input type="text" name="title" value="<%= project ? project.title : '' %>" required></div>
+      <div class="field-group"><label>Category</label><input type="text" name="category" value="<%= project ? project.category : '' %>" placeholder="e.g. Residential Interior Design"></div>
+    </div>
+    <div class="field-group">
+      <label>Image</label>
+      <% if (project && project.image) { %><img class="current-img" src="<%= project.image %>"><% } %>
+      <input type="file" name="imageFile" accept="image/*">
+      <p class="hint">Or paste an image URL instead:</p>
+      <input type="url" name="image" value="<%= project ? project.image : '' %>" placeholder="https://...">
+    </div>
+    <div class="field-group"><label>Display Order</label><input type="number" name="order" value="<%= project ? project.order : 0 %>"></div>
+    <div class="field-group">
+      <label><input type="checkbox" name="published" <%= (!project || project.published) ? 'checked' : '' %> style="width:auto; display:inline; margin-right:6px;"> Published</label>
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary"><%= project ? 'Save Changes' : 'Create Project' %></button>
+  <a class="btn btn-secondary" href="/admin/projects">Cancel</a>
+</form>
+
+<%- include('../partials/_foot') %>
