@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <%- include('../partials/head') %>
+
+    <link rel="stylesheet" href="https://cdn.pannellum.org/2.5/pannellum.css" />
+    <script src="https://cdn.pannellum.org/2.5/pannellum.js"></script>
+
+    <style>
+      .doorway-spot { display: flex; align-items: center; gap: 6px; color: #fff; cursor: pointer; }
+      .doorway-spot svg { width: 18px; height: 18px; }
+      .doorway-spot__label {
+        font-family: "Manrope", sans-serif;
+        font-size: 13px;
+        white-space: nowrap;
+        background: rgba(0, 0, 0, 0.55);
+        padding: 4px 10px;
+        border-radius: 999px;
+      }
+      .panorama-loader { transition: opacity 0.3s ease; }
+      .panorama-loader.is-hidden { opacity: 0; pointer-events: none; }
+      .panorama-room-name { transition: opacity 0.2s ease; }
+      .panorama-room-name.is-swapping { opacity: 0; }
+      .room-thumb {
+        width: 64px;
+        height: 44px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 2px solid transparent;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      .room-thumb.is-active { border-color: #fff; }
+      .room-thumb__label {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        font-family: "Manrope", sans-serif;
+        font-size: 9px;
+        color: #fff;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.5);
+        line-height: 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="root relative">
+
+      <%- include('../partials/menu') %>
+      <%- include('../partials/nav', { navTheme: 'black' }) %>
+
+      <main class="main-content">
+
+        <!-- HERO -->
+        <section class="relative bg-[#f2ede4] pt-[140px] sm:pt-[170px] pb-16 sm:pb-24">
+          <div class="container-x text-center">
+            <div class="max-w-[780px] mx-auto space-y-5 sm:space-y-6">
+              <h1 class="font-primary font-normal text-black text-[36px] leading-[42px] sm:text-[56px] sm:leading-[62px] lg:text-[68px] lg:leading-[74px]">
+                Virtual Projects
+              </h1>
+              <div class="inline-flex items-center rounded-full border border-black/15 px-6 sm:px-8 py-3 sm:py-4">
+                <p class="font-secondary text-[13px] sm:text-[14px] font-medium text-black">360° Interactive Virtual Tour</p>
+              </div>
+              <p class="font-secondary text-[14px] sm:text-[15px] leading-[24px] text-black/60 max-w-[620px] mx-auto">
+                Take a virtual walkthrough of our work and experience every space as if you were there. Explore room by room, understand the layout, and discover the design details from every angle.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 360 VIEWER -->
+        <section class="bg-white pb-16 sm:pb-24 md:pb-[100px]">
+          <div class="container-x">
+            <div class="panorama-box relative w-full h-[380px] sm:h-[500px] lg:h-[640px] bg-black overflow-hidden rounded-md">
+
+              <div id="panorama-360" class="w-full h-full"></div>
+
+              <div id="panoramaLoader" class="panorama-loader is-hidden absolute inset-0 z-10 flex items-center justify-center bg-black/60 text-white font-secondary text-[15px]">
+                <p>Opening the room&hellip;</p>
+              </div>
+
+              <div id="panoramaRoomName" class="panorama-room-name absolute top-5 left-5 z-10 text-white font-secondary text-[16px] sm:text-[18px] font-medium"></div>
+
+              <div class="absolute top-5 right-5 z-10 flex gap-2">
+                <button type="button" id="panoZoomIn" aria-label="Zoom in" class="size-9 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors">+</button>
+                <button type="button" id="panoZoomOut" aria-label="Zoom out" class="size-9 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors">&minus;</button>
+                <button type="button" id="panoFullscreen" aria-label="Fullscreen" class="size-9 rounded-full bg-white/15 hover:bg-white/25 text-white flex items-center justify-center transition-colors">&#9974;</button>
+              </div>
+
+              <nav id="panoramaRoomPicker" class="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 flex gap-3 px-2" aria-label="Jump to a room"></nav>
+            </div>
+
+            <p class="mt-6 text-center font-secondary text-[13px] text-black/40">
+              Drag to look around &middot; click a glowing arrow to move between rooms
+            </p>
+            <p class="mt-2 text-center font-secondary text-[11px] text-black/30">
+              "The Lounge" panorama: <a href="https://commons.wikimedia.org/wiki/File:Biblioteca_P%C3%BAblica_de_%C3%89vora_-_Sala_de_exposi%C3%A7%C3%B5es_(360_panorama).jpg" target="_blank" rel="noopener" class="underline hover:text-black/60">Biblioteca P&uacute;blica de &Eacute;vora</a>, licensed <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" class="underline hover:text-black/60">CC BY-SA 4.0</a>.
+            </p>
+          </div>
+        </section>
+
+      </main>
+
+      <%- include('../partials/cta') %>
+      <%- include('../partials/footer') %>
+
+    </div>
+
+    <script>
+      const sideMenu = document.getElementById("sideMenu");
+      const menuOverlay = document.getElementById("menuOverlay");
+      const openMenuBtn = document.getElementById("openMenuBtn");
+      const closeMenuBtn = document.getElementById("closeMenuBtn");
+      function openMenu() { sideMenu.classList.remove("-translate-x-full"); menuOverlay.classList.remove("hidden"); document.documentElement.style.overflow = "hidden"; }
+      function closeMenu() { sideMenu.classList.add("-translate-x-full"); menuOverlay.classList.add("hidden"); document.documentElement.style.overflow = ""; }
+      openMenuBtn.addEventListener("click", openMenu);
+      closeMenuBtn.addEventListener("click", closeMenu);
+      menuOverlay.addEventListener("click", closeMenu);
+      document.querySelectorAll(".menu-link").forEach((link) => {
+        link.addEventListener("click", (e) => {
+          const href = link.getAttribute("href");
+          if (!href || !href.startsWith("#") || href === "#" || href === "#!") { closeMenu(); return; }
+          e.preventDefault();
+          const targetEl = document.querySelector(href);
+          closeMenu();
+          setTimeout(() => { if (targetEl) targetEl.scrollIntoView({ behavior: "smooth", block: "start" }); }, 400);
+        });
+      });
+    </script>
+
+    <script>
+      const mainNav = document.getElementById("mainNav");
+      mainNav.style.transition = "transform 0.4s ease, background-color 0.3s ease, box-shadow 0.3s ease";
+      let lastScrollY = window.scrollY;
+      const scrollThreshold = 8;
+      function onNavScroll() {
+        const y = window.scrollY;
+        if (y > 40) {
+          mainNav.style.backgroundColor = "rgba(255, 255, 255, 0.72)";
+          mainNav.style.backdropFilter = "blur(12px)";
+          mainNav.style.webkitBackdropFilter = "blur(12px)";
+          mainNav.style.boxShadow = "0 6px 20px rgba(0, 0, 0, 0.06)";
+          mainNav.style.color = "#141414";
+        } else {
+          mainNav.style.backgroundColor = "";
+          mainNav.style.backdropFilter = "";
+          mainNav.style.webkitBackdropFilter = "";
+          mainNav.style.boxShadow = "";
+          mainNav.style.color = "";
+        }
+        const delta = y - lastScrollY;
+        if (Math.abs(delta) > scrollThreshold) {
+          mainNav.style.transform = (delta > 0 && y > 80) ? "translateY(-100%)" : "translateY(0)";
+          lastScrollY = y;
+        }
+      }
+      onNavScroll();
+      window.addEventListener("scroll", onNavScroll, { passive: true });
+    </script>
+
+    <!-- 360 TOUR -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (typeof pannellum === "undefined") return;
+
+        const SOURCE = [
+          { title: "The Living Room", image: "/assets/img/360/lounge-360.webp" },
+          { title: "The Bedroom", image: "/assets/img/360/lounge-360.webp" },
+          { title: "The Kitchen", image: "/assets/img/360/lounge-360.webp" },
+          { title: "The Lounge", image: "/assets/img/360/lounge-360.webp" },
+        ];
+
+        const ROOMS = {};
+        const ROOM_ORDER = SOURCE.map(function (p, i) { return "room" + i; });
+        SOURCE.forEach(function (p, i) {
+          const nextId = ROOM_ORDER[(i + 1) % ROOM_ORDER.length];
+          const nextTitle = SOURCE[(i + 1) % SOURCE.length].title;
+          ROOMS[ROOM_ORDER[i]] = {
+            title: p.title || "Room " + (i + 1),
+            panorama: p.image,
+            pitch: 0, yaw: 0, hfov: 110,
+            hotSpots: ROOM_ORDER.length > 1
+              ? [{ pitch: -3, yaw: 90, sceneId: nextId, label: "To " + nextTitle }]
+              : [],
+          };
+        });
+
+        const sceneConfig = {};
+        Object.keys(ROOMS).forEach((id) => {
+          const room = ROOMS[id];
+          sceneConfig[id] = {
+            title: room.title,
+            type: "equirectangular",
+            panorama: room.panorama,
+            pitch: room.pitch,
+            yaw: room.yaw,
+            hfov: room.hfov,
+            hotSpots: room.hotSpots.map((h) => ({
+              pitch: h.pitch,
+              yaw: h.yaw,
+              type: "scene",
+              sceneId: h.sceneId,
+              text: h.label,
+              cssClass: "doorway-spot",
+              createTooltipFunc: (div, args) => {
+                div.innerHTML =
+                  '<svg viewBox="0 0 20 20" fill="none"><path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+                  '<span class="doorway-spot__label">' + args + "</span>";
+              },
+              createTooltipArgs: h.label,
+            })),
+          };
+        });
+
+        const viewer = pannellum.viewer("panorama-360", {
+          default: {
+            firstScene: ROOM_ORDER[0],
+            autoLoad: true,
+            showControls: false,
+            compass: false,
+            autoRotate: -1.5,
+            friction: 0.15,
+            minHfov: 50,
+            maxHfov: 120,
+          },
+          scenes: sceneConfig,
+        });
+
+        const loaderEl = document.getElementById("panoramaLoader");
+        const roomNameEl = document.getElementById("panoramaRoomName");
+        const roomPickerEl = document.getElementById("panoramaRoomPicker");
+        const zoomInBtn = document.getElementById("panoZoomIn");
+        const zoomOutBtn = document.getElementById("panoZoomOut");
+        const fullscreenBtn = document.getElementById("panoFullscreen");
+        const boxEl = document.querySelector(".panorama-box");
+
+        function buildRoomPicker(activeId) {
+          roomPickerEl.innerHTML = "";
+          ROOM_ORDER.forEach((id) => {
+            const room = ROOMS[id];
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "room-thumb" + (id === activeId ? " is-active" : "");
+            btn.style.backgroundImage = "url(\"" + room.panorama + "\")";
+            btn.setAttribute("aria-label", "Go to " + room.title);
+            btn.innerHTML = '<span class="room-thumb__label">' + room.title.replace("The ", "") + "</span>";
+            btn.addEventListener("click", () => {
+              if (id !== viewer.getScene()) viewer.loadScene(id);
+            });
+            roomPickerEl.appendChild(btn);
+          });
+        }
+        buildRoomPicker(ROOM_ORDER[0]);
+        roomNameEl.textContent = ROOMS[ROOM_ORDER[0]].title;
+
+        viewer.on("load", () => {
+          loaderEl.classList.add("is-hidden");
+          setTimeout(() => viewer.setAutoRotate(0), 2500);
+        });
+
+        viewer.on("scenechange", (sceneId) => {
+          loaderEl.classList.remove("is-hidden");
+          roomNameEl.classList.add("is-swapping");
+          setTimeout(() => {
+            roomNameEl.textContent = ROOMS[sceneId].title;
+            roomNameEl.classList.remove("is-swapping");
+          }, 220);
+          buildRoomPicker(sceneId);
+        });
+
+        zoomInBtn.addEventListener("click", () => viewer.setHfov(viewer.getHfov() - 8, true));
+        zoomOutBtn.addEventListener("click", () => viewer.setHfov(viewer.getHfov() + 8, true));
+
+        fullscreenBtn.addEventListener("click", () => {
+          if (!document.fullscreenElement) {
+            (boxEl.requestFullscreen || boxEl.webkitRequestFullscreen)?.call(boxEl);
+          } else {
+            (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+          }
+          setTimeout(() => viewer.resize(), 100);
+        });
+      });
+    </script>
+
+  </body>
+</html>

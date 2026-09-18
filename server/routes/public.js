@@ -89,6 +89,14 @@ router.get("/gallery", async (req, res) => {
   });
 });
 
+router.get("/virtual-projects", (req, res) => {
+  res.render("pages/virtual-projects", {
+    canonicalUrl: baseUrl(req) + "/virtual-projects",
+    pageTitle: `${res.locals.settings.businessName} | Virtual Projects`,
+    pageDescription: "Take a 360° interactive virtual tour of our interior design projects, room by room.",
+  });
+});
+
 router.get("/cost-calculator", async (req, res) => {
   res.render("pages/cost-calculator", {
     canonicalUrl: baseUrl(req) + "/cost-calculator",
