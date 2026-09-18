@@ -10,17 +10,17 @@
       <%- include('../partials/menu') %>
 
       <header class="relative h-[100svh] min-h-[640px] overflow-hidden" id="home">
-        <img class="absolute inset-0 w-full h-full object-cover" src="<%= settings.heroImage %>" alt="<%= settings.businessName %> interior">
-        <div class="absolute inset-0 bg-black/45"></div>
+        <img class="absolute inset-0 w-full h-full object-cover bg-black" src="<%= settings.heroImage %>" alt="<%= settings.businessName %> interior">
+        <div class="absolute inset-0 z-[1]" style="background-color: #191919; opacity: .6; overflow: clip; flex: none; -webkit-mask: linear-gradient(#000 0%, #000000b3 48.6884%, #000 100%); mask: linear-gradient(#000 0%, #000000b3 48.6884%, #000 100%);"></div>
 
         <div class="relative z-[20] h-full flex flex-col text-white">
 
           <%- include('../partials/nav', { navTheme: 'white' }) %>
 
-          <div class="flex-1 px-4 sm:px-6 lg:px-10 pt-24 sm:pt-40">
+          <div class="flex-1 px-4 sm:px-6 lg:px-10 pt-[150px] sm:pt-56 lg:pt-[150px]">
             <div class="relative h-full">
 
-              <h1 class="font-secondary font-normal max-w-[400px] sm:max-w-[760px] text-[38px] leading-[42px] sm:text-[52px] sm:leading-[58px] lg:text-[60px] lg:leading-[66px]">
+              <h1 class="font-secondary font-light max-w-[400px] sm:max-w-[760px] text-[30px] leading-[34px] text-white sm:text-[40px] sm:leading-[44px] lg:text-[60px] lg:leading-[66px]">
                 <%= settings.heroTitle %>
               </h1>
 
@@ -34,21 +34,21 @@
             </div>
           </div>
 
-          <div class="px-4 sm:px-6 lg:px-10 pb-8 sm:pb-10">
-            <div class="flex justify-between gap-6 font-secondary text-[16px] leading-[21px] font-medium">
-              <div class="w-50 shrink-0">
-                <p class="text-white/60">Studio</p>
+          <div class="px-4 sm:px-6 lg:px-10 pb-[60px] sm:pb-10">
+            <div class="grid grid-cols-2 gap-x-6 gap-y-5 sm:flex sm:justify-between font-secondary text-[14px] leading-[16px] sm:text-[16px] sm:leading-[21px] font-medium">
+              <div class="min-w-0 sm:w-50 sm:shrink-0">
+                <p class="text-white/60 whitespace-nowrap">Studio</p>
                 <p class="mt-1"><%= settings.heroStudioLocation %></p>
               </div>
-              <div class="w-50 shrink-0">
-                <p class="text-white/60">Est. since</p>
+              <div class="sm:w-50 sm:shrink-0">
+                <p class="text-white/60 whitespace-nowrap">Est. since</p>
                 <p class="mt-1"><%= settings.heroEstSince %></p>
               </div>
-              <div class="w-50 shrink-0">
+              <div class="order-2 sm:order-none sm:w-50 sm:shrink-0">
                 <p class="text-white/60">Speciality</p>
                 <p class="mt-1"><%= settings.heroSpeciality %></p>
               </div>
-              <div class="w-50">
+              <div class="order-1 sm:order-none sm:w-50">
                 <p class="text-white/60">Rating</p>
                 <p class="mt-1"><%= settings.heroRating %></p>
               </div>
